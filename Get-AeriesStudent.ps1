@@ -19,10 +19,10 @@ Function Get-AeriesStudent{
             [Parameter(Mandatory=$true,
                 ValueFromPipeline=$true,
                 ValueFromPipelineByPropertyName=$true,
-                HelpMessage='HelpMessage',
+                # HelpMessage='HelpMessage',
                 Position=0)]
-            [ValidatePattern('[A-Z]')] #Validate that the string only contains letters
-            [String[]]$PipelineInput,
+            # [ValidatePattern('[A-Z]')] #Validate that the string only contains letters
+            [String[]]$ID,
 
             # Path to the config that will hold API Key & API URL. Potentially SQL credentials for writing data into as well.
             [Parameter(Mandatory=$True)]
