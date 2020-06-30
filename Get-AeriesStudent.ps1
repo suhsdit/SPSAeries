@@ -28,10 +28,22 @@ Function Get-AeriesStudent{
             [Parameter(Mandatory=$True)]
                 [IO.FileInfo]$ConfigPath
         )
-    
+
         Begin{
             Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
             #Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
+
+            # URL to access Aeries API
+            $APIURL = $Config.APIURL
+            #Headers for Aeries API
+            $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+            # Insert Certificate here
+            $headers.Add('AERIES-CERT', $apikey.GetNetworkCredential().Password)
+            $headers.Add('accept', 'application/json')
+
+            #the path to pull the student and invoke the request
+            $path = $APIURL + $SchoolCode + '/students/' + $ID
+            Invoke-RestMethod $path -Headers $headers
         }
         Process{
             ForEach($Object in $PipelineInput){ #Pipeline input
