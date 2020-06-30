@@ -24,6 +24,7 @@ Function Get-AeriesStudent{
             [ValidatePattern('[A-Z]')] #Validate that the string only contains letters
             [String[]]$PipelineInput,
 
+            # Path to the config that will hold API Key & API URL. Potentially SQL credentials for writing data into as well.
             [Parameter(Mandatory=$True)]
                 [IO.FileInfo]$ConfigPath
         )
