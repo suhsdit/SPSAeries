@@ -21,8 +21,11 @@ Function Get-AeriesStudent{
                 ValueFromPipelineByPropertyName=$true,
                 HelpMessage='HelpMessage',
                 Position=0)]
-            [ValidatePattern('[A-Z]')] #Validate that the string only contains letter
-            [String[]]$PipelineInput
+            [ValidatePattern('[A-Z]')] #Validate that the string only contains letters
+            [String[]]$PipelineInput,
+
+            [Parameter(Mandatory=$True)]
+                [IO.FileInfo]$ConfigPath
         )
     
         Begin{
