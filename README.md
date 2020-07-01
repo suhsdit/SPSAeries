@@ -7,6 +7,8 @@ Also need to generate secure APIKey and create by running Create-SecureCredFile.
 
 You will need to point to these files when running the commands.
 
+If you run the function inside Get-AeriesStudent.ps1, it will exist in memory and you can use the command. I'm still working on making this module load all the functions so it doesn't have to load every time. It might work right now, but I haven't tested it yet.
+
 **Examples:**
 
 *This will list student with ID Number 1234 under school with school code 1*
