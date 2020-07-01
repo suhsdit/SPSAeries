@@ -21,7 +21,7 @@ Function Get-AeriesStudent{
             ValueFromPipelineByPropertyName=$true,
             # HelpMessage='HelpMessage',
             Position=0)]
-        # [ValidatePattern('[A-Z]')] #Validate that the string only contains letters
+        [ValidatePattern('[0-9]')] #Validate that the string only contains letters
         [String[]]$ID,
 
         # Path to encrypted API Key
