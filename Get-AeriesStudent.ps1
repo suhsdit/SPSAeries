@@ -24,6 +24,10 @@ Function Get-AeriesStudent{
             # [ValidatePattern('[A-Z]')] #Validate that the string only contains letters
             [String[]]$ID,
 
+            # Path to encrypted API Key
+            [Parameter(Mandatory=$True)]
+                [IO.FileInfo]$APIKey
+
             # Path to the config that will hold API Key & API URL. Potentially SQL credentials for writing data into as well.
             [Parameter(Mandatory=$True)]
                 [IO.FileInfo]$ConfigPath
@@ -32,6 +36,10 @@ Function Get-AeriesStudent{
         Begin{
             Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
             #Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
+            
+            # Import config and apikey
+            $Config = Import-PowerShellDataFile -Path .\config.PSD1
+            $apikey = Import-Clixml $ConfigPath
 
             # URL to access Aeries API
             $APIURL = $Config.APIURL
