@@ -63,12 +63,18 @@ Function Get-AeriesStudent{
     Process{
         # If no users are specified, get all students
         try{ #Error handling
-            if ($ID.Count -lt 1 && !$Grade && !$StudentNumber) {
+            if ($ID.Count -lt 1 -and !$Grade -and !$StudentNumber) {
                 Write-Verbose -Message "Listing all students..."
                 $path = $APIURL + $SchoolCode + '/students/'
                 $result = Invoke-RestMethod $path -Headers $headers
                 return $result
                 }
+            elseif ($grade) {
+                Write-Verbose -Message "Listing all students in grade $Grade..."
+                $path = $APIURL + $SchoolCode + '/students/grade/' + $Grade
+                $result = Invoke-RestMethod $path -Headers $headers
+                return $result
+            }
         }
         catch{
             Write-Error -Message "$_ went wrong on $stu"
