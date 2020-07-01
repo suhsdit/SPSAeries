@@ -22,14 +22,15 @@ Function Get-AeriesStudent{
             # HelpMessage='HelpMessage',
             Position=0)]
         [ValidatePattern('[0-9]')] #Validate that the string only contains letters
+        [Alias("User", "Student")]
         [String[]]$ID,
 
         # Path to encrypted API Key
-        [Parameter(Mandatory=$True)]
+        [Parameter(Mandatory=$false)]
             [IO.FileInfo]$APIKey,
 
         # Path to the config that will hold API Key & API URL. Potentially SQL credentials for writing data into as well.
-        [Parameter(Mandatory=$True)]
+        [Parameter(Mandatory=$false)]
             [IO.FileInfo]$ConfigPath,
 
         # School Code under whitch to search for students
@@ -59,13 +60,9 @@ Function Get-AeriesStudent{
                 
                 $path = $APIURL + $SchoolCode + '/students/' + $stu
 
-                $Result = Invoke-RestMethod $path -Headers $headers
+                $result = Invoke-RestMethod $path -Headers $headers
 
-                #Generate Output
-                New-Object -TypeName PSObject -Property @{
-                    Result = $Result
-                    Object = $stu
-                }
+                return $result
             }
             catch{
                 Write-Error -Message "$_ went wrong on $stu"
