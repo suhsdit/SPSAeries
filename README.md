@@ -18,13 +18,19 @@ If you run the function inside Get-AeriesStudent.ps1, it will exist in memory an
 
 Get-AeriesStudent -ID 1234 -APIKey .\APIKey.xml -ConfigPath .\config.PSD1 -SchoolCode 1
 
+-------------------------------
+
 *This will list all students at school code 1*
 
 Get-AeriesStudent -APIKey .\APIKey.xml -ConfigPath .\config.PSD1 -SchoolCode 1
 
+-------------------------------
+
 *Accepts pipeline input for multiple Student ID's*
 
 1234, 1235, 5567 | Get-AeriesStudent -APIKey .\APIKey.xml -ConfigPath .\config.PSD1 -SchoolCode 1
+
+-------------------------------
 
 APIKey, ConfigPath, & SchoolCode are all currently required parameters.
 
