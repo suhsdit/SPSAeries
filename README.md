@@ -36,4 +36,4 @@ APIKey, ConfigPath, & SchoolCode are all currently required parameters.
 
 **To Do**
 
-Plans to code in direct access to the configpath and school code in different config files so you can switch which school you are working with.
+Plans to code in direct access to the configpath and school code in different config files so you can switch which school you are working with and not have to manually specify those parameters every time you run the command.
