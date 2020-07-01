@@ -22,7 +22,7 @@ Function Get-AeriesStudent{
             # HelpMessage='HelpMessage',
             Position=0)]
         [ValidatePattern('[0-9]')] #Validate that the string only contains letters
-        [Alias("User", "Student")]
+        [Alias("User", "StudentID")]
         [String[]]$ID,
 
         # Path to encrypted API Key
@@ -35,7 +35,15 @@ Function Get-AeriesStudent{
 
         # School Code under whitch to search for students
         [Parameter(Mandatory=$True)]
-            [String[]]$SchoolCode
+            [String]$SchoolCode,
+
+        # Grade level of students
+        [Parameter(Mandatory=$False)]
+        [String]$Grade,
+
+        # StudentNumber by which to search for the student
+        [Parameter(Mandatory=$True)]
+        [String]$StudentNumber
     )
 
     Begin{
@@ -54,8 +62,8 @@ Function Get-AeriesStudent{
         $headers.Add('accept', 'application/json')
     }
     Process{
+        # If no users are specified, get all students
         try{ #Error handling
-            
             if ($ID.Count -lt 1) {
                 Write-Verbose -Message "Listing all students..."
                 $path = $APIURL + $SchoolCode + '/students/'
