@@ -16,7 +16,7 @@ Function Get-AeriesStudent{
 #>
     [CmdletBinding()] #Enable all the default paramters, including -Verbose
     Param(
-        [Parameter(Mandatory=$true,
+        [Parameter(Mandatory=$false,
             ValueFromPipeline=$true,
             ValueFromPipelineByPropertyName=$true,
             # HelpMessage='HelpMessage',
@@ -30,7 +30,11 @@ Function Get-AeriesStudent{
 
         # Path to the config that will hold API Key & API URL. Potentially SQL credentials for writing data into as well.
         [Parameter(Mandatory=$True)]
-            [IO.FileInfo]$ConfigPath
+            [IO.FileInfo]$ConfigPath,
+
+        # School Code under whitch to search for students
+        [Parameter(Mandatory=$True)]
+            [String[]]$SchoolCode
     )
 
     Begin{
@@ -40,8 +44,6 @@ Function Get-AeriesStudent{
         # Import config and apikey
         $Config = Import-PowerShellDataFile -Path $ConfigPath
         $key = Import-Clixml $APIKey
-        # Get all of the schools
-        $SchoolCode = $Config.schoolcode
         # URL to access Aeries API
         $APIURL = $Config.APIURL
         #Headers for Aeries API
@@ -53,8 +55,7 @@ Function Get-AeriesStudent{
     Process{
         ForEach($stu in $ID){ #Pipeline input
             try{ #Error handling
-                $path = $APIURL + $SchoolCode + '/students/' + $ID
-                Write-Verbose -Message "Doing something on $stu..."
+                Write-Verbose -Message "Searching for Student with ID Number $stu..."
                 
                 $path = $APIURL + $SchoolCode + '/students/' + $stu
 
