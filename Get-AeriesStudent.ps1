@@ -14,63 +14,64 @@ Function Get-AeriesStudent{
 .NOTES
 .LINK
 #>
-        [CmdletBinding()] #Enable all the default paramters, including -Verbose
-        Param(
-            [Parameter(Mandatory=$true,
-                ValueFromPipeline=$true,
-                ValueFromPipelineByPropertyName=$true,
-                # HelpMessage='HelpMessage',
-                Position=0)]
-            # [ValidatePattern('[A-Z]')] #Validate that the string only contains letters
-            [String[]]$ID,
+    [CmdletBinding()] #Enable all the default paramters, including -Verbose
+    Param(
+        [Parameter(Mandatory=$true,
+            ValueFromPipeline=$true,
+            ValueFromPipelineByPropertyName=$true,
+            # HelpMessage='HelpMessage',
+            Position=0)]
+        # [ValidatePattern('[A-Z]')] #Validate that the string only contains letters
+        [String[]]$ID,
 
-            # Path to encrypted API Key
-            [Parameter(Mandatory=$True)]
-                [IO.FileInfo]$APIKey
+        # Path to encrypted API Key
+        [Parameter(Mandatory=$True)]
+            [IO.FileInfo]$APIKey,
 
-            # Path to the config that will hold API Key & API URL. Potentially SQL credentials for writing data into as well.
-            [Parameter(Mandatory=$True)]
-                [IO.FileInfo]$ConfigPath
-        )
+        # Path to the config that will hold API Key & API URL. Potentially SQL credentials for writing data into as well.
+        [Parameter(Mandatory=$True)]
+            [IO.FileInfo]$ConfigPath
+    )
 
-        Begin{
-            Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
-            #Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
-            
-            # Import config and apikey
-            $Config = Import-PowerShellDataFile -Path .\config.PSD1
-            $apikey = Import-Clixml $ConfigPath
+    Begin{
+        Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
+        #Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
+        
+        # Import config and apikey
+        $Config = Import-PowerShellDataFile -Path $ConfigPath
+        $key = Import-Clixml $APIKey
+        # Get all of the schools
+        $SchoolCode = $Config.schoolcode
+        # URL to access Aeries API
+        $APIURL = $Config.APIURL
+        #Headers for Aeries API
+        $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+        # Insert Certificate here
+        $headers.Add('AERIES-CERT', $key.GetNetworkCredential().Password)
+        $headers.Add('accept', 'application/json')
+    }
+    Process{
+        ForEach($stu in $ID){ #Pipeline input
+            try{ #Error handling
+                $path = $APIURL + $SchoolCode + '/students/' + $ID
+                Write-Verbose -Message "Doing something on $stu..."
+                
+                $path = $APIURL + $SchoolCode + '/students/' + $stu
 
-            # URL to access Aeries API
-            $APIURL = $Config.APIURL
-            #Headers for Aeries API
-            $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-            # Insert Certificate here
-            $headers.Add('AERIES-CERT', $apikey.GetNetworkCredential().Password)
-            $headers.Add('accept', 'application/json')
+                $Result = Invoke-RestMethod $path -Headers $headers
 
-            #the path to pull the student and invoke the request
-            $path = $APIURL + $SchoolCode + '/students/' + $ID
-            Invoke-RestMethod $path -Headers $headers
-        }
-        Process{
-            ForEach($Object in $PipelineInput){ #Pipeline input
-                try{ #Error handling
-                    Write-Verbose -Message "Doing something on $Object..."
-                    $Result = $Object | Do-SomeThing -ErrorAction Stop
-                    
-                    #Generate Output
-                    New-Object -TypeName PSObject -Property @{
-                        Result = $Result
-                        Object = $Object
-                    }
-                }
-                catch{
-                    Write-Error -Message "$_ went wrong on $Object"
+                #Generate Output
+                New-Object -TypeName PSObject -Property @{
+                    Result = $Result
+                    Object = $stu
                 }
             }
-        }
-        End{
-            Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
+            catch{
+                Write-Error -Message "$_ went wrong on $stu"
+            }
         }
     }
+    End{
+        Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
+    }
+}
