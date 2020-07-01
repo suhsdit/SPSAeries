@@ -1,4 +1,3 @@
-#AdvancedFunction
 Function Get-AeriesStudent{
 <#
 .SYNOPSIS
@@ -42,7 +41,7 @@ Function Get-AeriesStudent{
         [String]$Grade,
 
         # StudentNumber by which to search for the student
-        [Parameter(Mandatory=$True)]
+        [Parameter(Mandatory=$False)]
         [String]$StudentNumber
     )
 
@@ -64,7 +63,7 @@ Function Get-AeriesStudent{
     Process{
         # If no users are specified, get all students
         try{ #Error handling
-            if ($ID.Count -lt 1) {
+            if ($ID.Count -lt 1 && !$Grade && !$StudentNumber) {
                 Write-Verbose -Message "Listing all students..."
                 $path = $APIURL + $SchoolCode + '/students/'
                 $result = Invoke-RestMethod $path -Headers $headers
