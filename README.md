@@ -34,4 +34,5 @@ Get-AeriesStudent -APIKey .\APIKey.xml -ConfigPath .\config.PSD1 -SchoolCode 1
 
 APIKey, ConfigPath, & SchoolCode are all currently required parameters.
 
-I would like to code in direct access to the configpath and school code in different config files so you can switch which school you are working with.
+**To Do**
+Plans to code in direct access to the configpath and school code in different config files so you can switch which school you are working with.
