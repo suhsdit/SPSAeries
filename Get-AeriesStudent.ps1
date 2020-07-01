@@ -77,13 +77,25 @@ Function Get-AeriesStudent{
             }
         }
         catch{
-            Write-Error -Message "$_ went wrong on $stu"
+            Write-Error -Message "$_ went wrong."
         }
         
         ForEach($stu in $ID){ #Pipeline input
-            try{ #Error handling
+            try{
                 Write-Verbose -Message "Searching for Student with ID Number $stu..."
                 $path = $APIURL + $SchoolCode + '/students/' + $stu
+                $result = Invoke-RestMethod $path -Headers $headers
+                return $result
+            }
+            catch{
+                Write-Error -Message "$_ went wrong on $stu"
+            }
+        }
+
+        ForEach($stu in $StudentNumber){ 
+            try{
+                Write-Verbose -Message "Searching for Student with Student Number $stu..."
+                $path = $APIURL + $SchoolCode + '/students/sn/' + $stu
                 $result = Invoke-RestMethod $path -Headers $headers
                 return $result
             }
