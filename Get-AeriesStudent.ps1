@@ -54,14 +54,24 @@ Function Get-AeriesStudent{
         $headers.Add('accept', 'application/json')
     }
     Process{
+        try{ #Error handling
+            
+            if ($ID.Count -lt 1) {
+                Write-Verbose -Message "Listing all students..."
+                $path = $APIURL + $SchoolCode + '/students/'
+                $result = Invoke-RestMethod $path -Headers $headers
+                return $result
+                }
+        }
+        catch{
+            Write-Error -Message "$_ went wrong on $stu"
+        }
+        
         ForEach($stu in $ID){ #Pipeline input
             try{ #Error handling
                 Write-Verbose -Message "Searching for Student with ID Number $stu..."
-                
                 $path = $APIURL + $SchoolCode + '/students/' + $stu
-
                 $result = Invoke-RestMethod $path -Headers $headers
-
                 return $result
             }
             catch{
