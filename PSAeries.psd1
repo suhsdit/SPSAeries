@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-# RootModule = ''
+# RootModule = 'PSAeries.psm1'
 
 # Version number of this module.
 ModuleVersion = '0.0.1'
@@ -101,7 +101,7 @@ PrivateData = @{
         # LicenseUri = ''
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        # ProjectUri = 'https://gitlab.com/suhsd/psaeries'
 
         # A URL to an icon representing this module.
         # IconUri = ''
