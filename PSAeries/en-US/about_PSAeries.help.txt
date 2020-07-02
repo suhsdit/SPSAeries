@@ -1,0 +1,14 @@
+PSTOPIC
+    about_PSAeries
+
+SHORT DESCRIPTION
+    PSAeries allows you to work with the Aeries API through PowerShell functions
+
+LONG DESCRIPTION
+    PSAeries allows you to work with the Aeries API through PowerShell functions
+
+    You can find API documentation here:
+        https://support.aeries.com/support/solutions/articles/14000077926-aeries-api-full-documentation
+
+DETAILED DESCRIPTION
+    This is a module that allows querying for Aeries data via the Aeries API.
