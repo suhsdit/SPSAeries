@@ -19,10 +19,13 @@ Foreach($import in @($Public + $Private))
 # Here I might...
 # Read in or create an initial config file and variable
 $PSAeriesConfigDir = "$Env:USERPROFILE\AppData\Local\powershell\PSAeries"
-$PSAeriesAPIKey = "$PSAeriesConfigDir\apikey.xml"
-$PSAeriesConfig = "$PSAeriesConfigDir\config.PSD1"
+
 
 # Export Public functions ($Public.BaseName) for WIP modules
 # Set variables visible to the module and its functions only
+$Config = Import-PowerShellDataFile -Path "$PSAeriesConfigDir\config.PSD1"
+New-Variable -Name Config -Value $Config -Scope Script -Force
+$APIKey = Import-Clixml -Path "$PSAeriesConfigDir\apikey.xml"
+New-Variable -Name APIKey -Value $APIKey -Scope Script -Force
 
 Export-ModuleMember -Function $Public.Basename

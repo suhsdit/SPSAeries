@@ -25,12 +25,12 @@ Function Get-AeriesStudent{
         [String[]]$ID,
 
         # Path to encrypted API Key
-        [Parameter(Mandatory=$false)]
-            [IO.FileInfo]$APIKey,
+        #[Parameter(Mandatory=$false)]
+        #    [IO.FileInfo]$APIKey,
 
         # Path to the config that will hold API Key & API URL. Potentially SQL credentials for writing data into as well.
-        [Parameter(Mandatory=$false)]
-            [IO.FileInfo]$ConfigPath,
+        #[Parameter(Mandatory=$false)]
+        #    [IO.FileInfo]$ConfigPath,
 
         # School Code under whitch to search for students
         [Parameter(Mandatory=$True)]
@@ -50,14 +50,17 @@ Function Get-AeriesStudent{
         #Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
         
         # Import config and apikey
-        $Config = Import-PowerShellDataFile -Path $ConfigPath
-        $key = Import-Clixml $APIKey
+        #$Config = $Global:Config
+        Write-Verbose "Config: $Config"
+        #$Key = $Global:APIKey
+        Write-Verbose "Key: $Key"
         # URL to access Aeries API
         $APIURL = $Config.APIURL
+        Write-Verbose "APIURL: $APIURL"
         #Headers for Aeries API
         $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
         # Insert Certificate here
-        $headers.Add('AERIES-CERT', $key.GetNetworkCredential().Password)
+        $headers.Add('AERIES-CERT', $APIKey.GetNetworkCredential().Password)
         $headers.Add('accept', 'application/json')
     }
     Process{
