@@ -5,7 +5,7 @@ Function Get-AeriesStudent{
 .DESCRIPTION
     The Get-AeriesStudent function gets a student object or performs a search to retrieve multiple student objects.
 .EXAMPLE
-    Get-ADUser -Filter * -SchoolCode 1
+    Get-ADUser -SchoolCode 1
     Get all users under the school matching school code 1.
     .PARAMETER
 .INPUTS
@@ -24,14 +24,6 @@ Function Get-AeriesStudent{
         [Alias("User", "StudentID")]
         [String[]]$ID,
 
-        # Path to encrypted API Key
-        #[Parameter(Mandatory=$false)]
-        #    [IO.FileInfo]$APIKey,
-
-        # Path to the config that will hold API Key & API URL. Potentially SQL credentials for writing data into as well.
-        #[Parameter(Mandatory=$false)]
-        #    [IO.FileInfo]$ConfigPath,
-
         # School Code under whitch to search for students
         [Parameter(Mandatory=$True)]
             [String]$SchoolCode,
@@ -47,7 +39,7 @@ Function Get-AeriesStudent{
 
     Begin{
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
-        #Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
+        Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
         
         # Import config and apikey
         #$Config = $Global:Config
@@ -83,17 +75,21 @@ Function Get-AeriesStudent{
             Write-Error -Message "$_ went wrong."
         }
         
-        ForEach($stu in $ID){ #Pipeline input
-            try{
-                Write-Verbose -Message "Searching for Student with ID Number $stu..."
-                $path = $APIURL + $SchoolCode + '/students/' + $stu
-                $result = Invoke-RestMethod $path -Headers $headers
-                return $result
-            }
-            catch{
-                Write-Error -Message "$_ went wrong on $stu"
+        if ($ID.Count -gt 0)
+        {
+            ForEach($stu in $ID){ #Pipeline input
+                try{
+                    Write-Verbose -Message "Searching for Student with ID Number $stu..."
+                    $path = $APIURL + $SchoolCode + '/students/' + $stu
+                    $result = Invoke-RestMethod $path -Headers $headers
+                    return $result
+                }
+                catch{
+                    Write-Error -Message "$_ went wrong on $stu"
+                }
             }
         }
+        
 
         ForEach($stu in $StudentNumber){ 
             try{
