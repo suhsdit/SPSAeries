@@ -51,6 +51,7 @@ Function Update-AeriesStudent{
     }
     Process{
         $SQLCommand.CommandText = "UPDATE $($SQLDB).dbo.STU SET STU.SEM = ('"+$Email+"') Where STU.ID = '"+$ID+"'"
+        Write-Verbose $SQLCommand.CommandText
 		$SQLCommand.ExecuteNonQuery()|Out-Null
     }
     End{
