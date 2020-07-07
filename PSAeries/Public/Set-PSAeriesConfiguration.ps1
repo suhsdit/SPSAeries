@@ -37,7 +37,7 @@ Function Set-PSAeriesConfiguration{
                 $Script:PSAeriesConfigDir = "$Env:USERPROFILE\AppData\Local\powershell\PSAeries\$Name"
                 Write-Verbose -Message "Config dir: $PSAeriesConfigDir"
 
-                $Script:Config = Import-PowerShellDataFile -Path "$Script:PSAeriesConfigDir\config.PSD1"
+                $Script:Config = Get-Content -Raw -Path "$Script:PSAeriesConfigDir\config.json" | ConvertFrom-Json
                 Write-Verbose -Message "Importing config.PSD1"
 
                 $Script:APIKey = Import-Clixml -Path "$Script:PSAeriesConfigDir\apikey.xml"
