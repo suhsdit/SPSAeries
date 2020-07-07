@@ -29,7 +29,6 @@ Function Set-PSAeriesConfiguration{
             
         }
         Process{
-            # If no users are specified, get all students
             try{
                 Write-Verbose -Message "Changing Config from $($Script:PSAeriesConfigName) to $($Name)"
                 $Script:PSAeriesConfigName = $Name
@@ -38,7 +37,7 @@ Function Set-PSAeriesConfiguration{
                 Write-Verbose -Message "Config dir: $PSAeriesConfigDir"
 
                 $Script:Config = Get-Content -Raw -Path "$Script:PSAeriesConfigDir\config.json" | ConvertFrom-Json
-                Write-Verbose -Message "Importing config.PSD1"
+                Write-Verbose -Message "Importing config.json"
 
                 $Script:APIKey = Import-Clixml -Path "$Script:PSAeriesConfigDir\apikey.xml"
                 Write-Verbose -Message "Importing apikey.xml"

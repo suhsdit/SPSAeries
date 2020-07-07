@@ -38,8 +38,6 @@ Function New-PSAeriesConfiguration{
                 if(!(Test-Path -path "$PSAeriesConfigRoot\$Name")) {
                     New-Item -ItemType Directory -Name $Name -Path $Script:PSAeriesConfigRoot
                     $Script:PSAeriesConfigDir = "$Script:PSAeriesConfigRoot\$Name"
-                    Write-Verbose -Message "Creating blank config.PSD1"
-                    copy-item -Path $PSScriptRoot\blank_config.PSD1 -Destination "$PSAeriesConfigDir\config.PSD1"
 
                     Write-Verbose -Message "Setting new Config file"
 
