@@ -33,7 +33,6 @@ Function Set-PSAeriesConfiguration{
             try{
                 Write-Verbose -Message "Changing Config from $($Script:PSAeriesConfigName) to $($Name)"
                 $Script:PSAeriesConfigName = $Name
-
                 $Script:PSAeriesConfigDir = "$Env:USERPROFILE\AppData\Local\powershell\PSAeries\$Name"
 
                 write-verbose "Triggered"

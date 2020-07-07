@@ -22,12 +22,11 @@ Foreach($import in @($Public + $Private))
 
 # Export Public functions ($Public.BaseName) for WIP modules
 
-# Aeries Config Name
+# Aeries Config info, set script variables
 New-Variable -Name PSAeriesConfigName -Scope Script -Force
 New-Variable -Name PSAeriesConfigDir -Scope Script -Force
-# Location Of Config.txt
 New-Variable -Name Config -Scope Script -Force
-# Location of apikey.xml
 New-Variable -Name APIKey -Scope Script -Force
+New-Variable -Name SQLCreds -Scope Script -Force
 
 Export-ModuleMember -Function $Public.Basename
