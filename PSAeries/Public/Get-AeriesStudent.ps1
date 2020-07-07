@@ -41,17 +41,12 @@ Function Get-AeriesStudent{
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
         Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
         
-        # Import config and apikey
-        #$Config = $Global:Config
-        Write-Verbose "Config: $Config"
-        #$Key = $Global:APIKey
-        Write-Verbose "Key: $Key"
+        Write-Verbose "Using Config: $Config"
         # URL to access Aeries API
         $APIURL = $Config.APIURL
         Write-Verbose "APIURL: $APIURL"
         #Headers for Aeries API
         $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-        # Insert Certificate here
         $headers.Add('AERIES-CERT', $APIKey.GetNetworkCredential().Password)
         $headers.Add('accept', 'application/json')
     }
@@ -60,13 +55,13 @@ Function Get-AeriesStudent{
         try{ #Error handling
             if ($ID.Count -lt 1 -and !$Grade -and !$StudentNumber) {
                 Write-Verbose -Message "Listing all students..."
-                $path = $APIURL + $SchoolCode + '/students/'
+                $path = $APIURL + 'schools/' + $SchoolCode + '/students/'
                 $result = Invoke-RestMethod $path -Headers $headers
                 return $result
                 }
             elseif ($grade) {
                 Write-Verbose -Message "Listing all students in grade $Grade..."
-                $path = $APIURL + $SchoolCode + '/students/grade/' + $Grade
+                $path = $APIURL + 'schools/' + $SchoolCode + '/students/grade/' + $Grade
                 $result = Invoke-RestMethod $path -Headers $headers
                 return $result
             }
@@ -80,7 +75,7 @@ Function Get-AeriesStudent{
             ForEach($stu in $ID){ #Pipeline input
                 try{
                     Write-Verbose -Message "Searching for Student with ID Number $stu..."
-                    $path = $APIURL + $SchoolCode + '/students/' + $stu
+                    $path = $APIURL + 'schools/' + $SchoolCode + '/students/' + $stu
                     $result = Invoke-RestMethod $path -Headers $headers
                     return $result
                 }
@@ -94,7 +89,7 @@ Function Get-AeriesStudent{
         ForEach($stu in $StudentNumber){ 
             try{
                 Write-Verbose -Message "Searching for Student with Student Number $stu..."
-                $path = $APIURL + $SchoolCode + '/students/sn/' + $stu
+                $path = $APIURL + 'schools/' + $SchoolCode + '/students/sn/' + $stu
                 $result = Invoke-RestMethod $path -Headers $headers
                 return $result
             }
