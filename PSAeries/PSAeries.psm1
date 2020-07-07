@@ -24,6 +24,8 @@ Foreach($import in @($Public + $Private))
 
 # Aeries Config info, set script variables
 New-Variable -Name PSAeriesConfigName -Scope Script -Force
+New-Variable -Name PSAeriesConfigRoot -Scope Script -Force
+$PSAeriesConfigRoot = "$Env:USERPROFILE\AppData\Local\powershell\PSAeries"
 New-Variable -Name PSAeriesConfigDir -Scope Script -Force
 New-Variable -Name Config -Scope Script -Force
 New-Variable -Name APIKey -Scope Script -Force

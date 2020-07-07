@@ -45,6 +45,7 @@ Function Get-AeriesStudent{
         # URL to access Aeries API
         $APIURL = $Config.APIURL
         Write-Verbose "APIURL: $APIURL"
+        
         #Headers for Aeries API
         $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
         $headers.Add('AERIES-CERT', $APIKey.GetNetworkCredential().Password)

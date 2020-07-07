@@ -31,25 +31,34 @@ Function New-PSAeriesConfiguration{
         Process{
             # If no users are specified, get all students
             try{
-                $PSAeriesConfigDir = "$Env:USERPROFILE\AppData\Local\powershell\PSAeries"
-                
-                $config = ''
-
-                if ($Name) {
-                    $config = $Name
+                if (!$Name) {
+                    $Name = Read-Host "Config Name"
                 }
-                elseif (!$Name) {
-                    $config = Read-Host "Config Name"
+
+                if(!(Test-Path -path "$PSAeriesConfigRoot\$Name")) {
+                    New-Item -ItemType Directory -Name $Name -Path $Script:PSAeriesConfigRoot
+                    $Script:PSAeriesConfigDir = "$Script:PSAeriesConfigRoot\$Name"
+                    Write-Verbose -Message "Creating blank config.PSD1"
+                    copy-item -Path $PSScriptRoot\blank_config.PSD1 -Destination "$PSAeriesConfigDir\config.PSD1"
+
+                    Write-Verbose -Message "Setting new Config file"
+
+                    $APIURL = Read-Host 'Aeries API URL'
+                    Get-Credential -UserName ' ' -Message 'Enter your Aeries API Key' | Export-Clixml "$PSAeriesConfigDir\apikey.xml"
+
+                    $SQLServer = Read-Host 'Aeries SQL DB Server Address'
+                    $SQLDB = Read-Host 'Aeries SQL DB'
+                    Get-credential -Message 'Enter your Aeries SQL credentials' | Export-Clixml "$PSAeriesConfigDir\sqlcreds.xml"
+                    
+                    @{Config=$Name;APIURL=$APIURL;SQLServer=$SQLServer;SQLDB=$SQLDB} | ConvertTo-Json | Out-File "$PSAeriesConfigDir\config.json"
+
+                    # Set the new files as active
+                    Set-PSAeriesConfiguration $Name
                 }
-                New-Item -ItemType Directory -Name $config -Path $PSAeriesConfigDir
-
-                # Run once to create secure credential file
-                Get-Credential -UserName ' ' -Message 'Enter your Aeries API Key' | Export-Clixml "$PSAeriesConfigDir\$config\apikey.xml"
-                Get-credential -Message 'Enter your Aeries SQL credentials' | Export-Clixml "$PSAeriesConfigDir\$config\sqlcreds.xml"
-                copy-item -Path $PSScriptRoot\blank_config.PSD1 -Destination "$PSAeriesConfigDir\$config\config.PSD1"
-
-                # Eventually will ask for all values in this script. For now...
-                Write-Host 'Edit Config file with proper values at' $PSAeriesConfigDir\$config\config.PSD1
+                else {
+                    Write-Warning -Message "Config already exists."
+                    break
+                }
             }
             catch{
                 Write-Error -Message "$_ went wrong."

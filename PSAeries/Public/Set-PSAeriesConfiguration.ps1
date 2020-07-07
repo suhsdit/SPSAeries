@@ -33,15 +33,18 @@ Function Set-PSAeriesConfiguration{
             try{
                 Write-Verbose -Message "Changing Config from $($Script:PSAeriesConfigName) to $($Name)"
                 $Script:PSAeriesConfigName = $Name
-                $Script:PSAeriesConfigDir = "$Env:USERPROFILE\AppData\Local\powershell\PSAeries\$Name"
 
-                write-verbose "Triggered"
-                Write-Verbose -Message "PSAeriesConfigDir: $($Script:PSAeriesConfigDir)"
-                write-verbose "Triggered"
+                $Script:PSAeriesConfigDir = "$Env:USERPROFILE\AppData\Local\powershell\PSAeries\$Name"
+                Write-Verbose -Message "Config dir: $PSAeriesConfigDir"
+
                 $Script:Config = Import-PowerShellDataFile -Path "$Script:PSAeriesConfigDir\config.PSD1"
-                write-verbose "Triggered"
+                Write-Verbose -Message "Importing config.PSD1"
+
                 $Script:APIKey = Import-Clixml -Path "$Script:PSAeriesConfigDir\apikey.xml"
-                write-verbose "Triggered"
+                Write-Verbose -Message "Importing apikey.xml"
+
+                $Script:SQLCreds = Import-Clixml -Path "$Script:PSAeriesConfigDir\sqlcreds.xml"
+                Write-Verbose -Message "Importing sqlcreds.xml"
             }
             catch{
                 Write-Error -Message "$_ went wrong."
