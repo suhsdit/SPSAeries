@@ -5,8 +5,8 @@ Function Get-AeriesStudent{
 .DESCRIPTION
     The Get-AeriesStudent function gets a student object or performs a search to retrieve multiple student objects.
 .EXAMPLE
-    Get-ADUser -SchoolCode 1
-    Get all users under the school matching school code 1.
+    Get-AeriesStudent -SchoolCode 1
+    Get all students under the school matching school code 1.
     .PARAMETER
 .INPUTS
 .OUTPUTS
@@ -20,13 +20,13 @@ Function Get-AeriesStudent{
             ValueFromPipelineByPropertyName=$true,
             # HelpMessage='HelpMessage',
             Position=0)]
-        [ValidatePattern('[0-9]')] #Validate that the string only contains letters
+        [ValidatePattern('[0-9]')] #Validate that the string only contains Numbers
         [Alias("User", "StudentID")]
         [String[]]$ID,
 
         # School Code under whitch to search for students
-        [Parameter(Mandatory=$True)]
-            [String]$SchoolCode,
+        [Parameter(Mandatory=$False)]
+            [String[]]$SchoolCode,
 
         # Grade level of students
         [Parameter(Mandatory=$False)]
@@ -45,7 +45,7 @@ Function Get-AeriesStudent{
         # URL to access Aeries API
         $APIURL = $Config.APIURL
         Write-Verbose "APIURL: $APIURL"
-        
+
         #Headers for Aeries API
         $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
         $headers.Add('AERIES-CERT', $APIKey.GetNetworkCredential().Password)
