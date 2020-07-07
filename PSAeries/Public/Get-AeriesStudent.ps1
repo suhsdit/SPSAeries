@@ -52,52 +52,73 @@ Function Get-AeriesStudent{
         $headers.Add('accept', 'application/json')
     }
     Process{
-        # If no users are specified, get all students
-        try{ #Error handling
-            if ($ID.Count -lt 1 -and !$Grade -and !$StudentNumber) {
-                Write-Verbose -Message "Listing all students..."
-                $path = $APIURL + 'schools/' + $SchoolCode + '/students/'
-                $result = Invoke-RestMethod $path -Headers $headers
-                return $result
-                }
-            elseif ($grade) {
-                Write-Verbose -Message "Listing all students in grade $Grade..."
-                $path = $APIURL + 'schools/' + $SchoolCode + '/students/grade/' + $Grade
-                $result = Invoke-RestMethod $path -Headers $headers
-                return $result
-            }
-        }
-        catch{
-            Write-Error -Message "$_ went wrong."
-        }
-        
-        if ($ID.Count -gt 0)
-        {
-            ForEach($stu in $ID){ #Pipeline input
-                try{
-                    Write-Verbose -Message "Searching for Student with ID Number $stu..."
-                    $path = $APIURL + 'schools/' + $SchoolCode + '/students/' + $stu
-                    $result = Invoke-RestMethod $path -Headers $headers
-                    return $result
-                }
-                catch{
-                    Write-Error -Message "$_ went wrong on $stu"
-                }
-            }
-        }
-        
+        $result
 
-        ForEach($stu in $StudentNumber){ 
-            try{
-                Write-Verbose -Message "Searching for Student with Student Number $stu..."
-                $path = $APIURL + 'schools/' + $SchoolCode + '/students/sn/' + $stu
-                $result = Invoke-RestMethod $path -Headers $headers
-                return $result
+        $SchoolCodes = @()
+        if (!$SchoolCode) {
+            $Schools = Get-AeriesSchool
+            foreach ($School in $Schools) {
+                $SchoolCodes += $School.SchoolCode
+                write-verbose -Message "School Code Detected: $($School.SchoolCode)"
+            }
+        }
+        else {
+            $SchoolCodes += $SchoolCode
+        }
+        Write-Verbose -Message "All School codes: $($SchoolCodes)"
+        Write-Verbose -Message "First SchoolCode $($SchoolCodes[0])"
+
+        ForEach ($sc in $SchoolCodes) {
+            Write-Verbose -Message "Working in SchoolCode $($sc)"
+
+            # If no users are specified, get all students
+            try{ #Error handling
+                if ($ID.Count -lt 1 -and !$Grade -and !$StudentNumber) {
+                    Write-Verbose -Message "Listing all students..."
+                    $path = $APIURL + 'schools/' + $sc + '/students/'
+                    Write-Verbose -Message "path $path"
+                    $result += Invoke-RestMethod $path -Headers $headers
+                    }
+                elseif ($grade) {
+                    Write-Verbose -Message "Listing all students in grade $Grade..."
+                    $path = $APIURL + 'schools/' + $sc + '/students/grade/' + $Grade
+                    $result += Invoke-RestMethod $path -Headers $headers
+                }
             }
             catch{
-                Write-Error -Message "$_ went wrong on $stu"
+                Write-Error -Message "$_ went wrong."
             }
+            
+            if ($ID.Count -gt 0)
+            {
+                ForEach($stu in $ID){ #Pipeline input
+                    try{
+                        Write-Verbose -Message "Searching for Student with ID Number $stu..."
+                        $path = $APIURL + 'schools/' + $sc + '/students/' + $stu
+                        $result += Invoke-RestMethod $path -Headers $headers
+                    }
+                    catch{
+                        Write-Error -Message "$_ went wrong on $stu"
+                    }
+                }
+            }
+            
+            if ($StudentNumber)
+            {
+                ForEach($stu in $StudentNumber){ 
+                    try{
+                        Write-Verbose -Message "Searching for Student with Student Number $stu..."
+                        $path = $APIURL + 'schools/' + $sc + '/students/sn/' + $stu
+                        $result += Invoke-RestMethod $path -Headers $headers
+                    }
+                    catch{
+                        Write-Error -Message "$_ went wrong on $stu"
+                    }
+                }
+            }
+            
         }
+        return $result
     }
     End{
         Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
