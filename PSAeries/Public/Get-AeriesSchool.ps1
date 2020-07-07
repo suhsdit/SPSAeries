@@ -7,7 +7,7 @@ Function Get-AeriesSchool{
 .EXAMPLE
     Get-AeriesSchool -SchoolCode 1
     Get all users under the school matching school code 1.
-    .PARAMETER
+.PARAMETER
 .INPUTS
 .OUTPUTS
 .NOTES
