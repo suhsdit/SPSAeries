@@ -15,7 +15,7 @@ Function New-PSAeriesConfiguration{
     #>
         [CmdletBinding()] #Enable all the default paramters, including -Verbose
         Param(
-            [Parameter(Mandatory=$true,
+            [Parameter(Mandatory=$false,
                 ValueFromPipeline=$true,
                 ValueFromPipelineByPropertyName=$true,
                 # HelpMessage='HelpMessage',
