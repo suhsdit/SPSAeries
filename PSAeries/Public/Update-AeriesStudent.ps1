@@ -26,7 +26,11 @@ Function Update-AeriesStudent{
 
         # Email address to update
         [Parameter(Mandatory=$False)]
-        [String]$Email
+        [String]$Email,
+
+        # Update Password
+        [Parameter(Mandatory=$False)]
+        [String]$Password #Should probably change this to SecureString
     )
 
     Begin{
@@ -50,9 +54,17 @@ Function Update-AeriesStudent{
 
     }
     Process{
-        $SQLCommand.CommandText = "UPDATE $($SQLDB).dbo.STU SET STU.SEM = ('"+$Email+"') Where STU.ID = '"+$ID+"'"
-        Write-Verbose $SQLCommand.CommandText
-		$SQLCommand.ExecuteNonQuery()|Out-Null
+        if ($Email) {
+            $SQLCommand.CommandText = "UPDATE $($SQLDB).dbo.STU SET STU.SEM = ('"+$Email+"') Where STU.ID = '"+$ID+"'"
+            Write-Verbose $SQLCommand.CommandText
+            $SQLCommand.ExecuteNonQuery()|Out-Null
+        }
+
+        if ($Password) {
+            $SQLCommand.CommandText = "UPDATE $($SQLDB).dbo.STU SET STU.NID = ('"+$Password+"') Where STU.ID = '"+$ID+"'"
+		    $SQLCommand.ExecuteNonQuery()|Out-Null
+        }
+        
     }
     End{
         Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
