@@ -35,6 +35,7 @@ Get-AeriesStudent -SchoolCode 1
 *This will list all students under all school codes*
 
 Get-AeriesStudent
+
 -------------------------------
 
 *Accepts pipeline input for multiple Student ID's*
