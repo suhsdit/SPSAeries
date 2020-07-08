@@ -2,38 +2,48 @@
 
 *Powershell module for Aeries SIS*
 
+**Disclaimer**
+This is my very first Powershell module. I still consider myself to be an advanced novice with Powershell, so use with caution. Any help/advice is appreciated!
+
 **Installation Instructions**
 
-Currently requires population of the config.PSD1, do not populate APIKey in config.PSD1 at this time.
+Put the PSAeries folder into your User Module repository at: %UserProfile%\Documents\WindowsPowerShell\Modules
+Run Import-Module PSAeries
+Run New-PSAeriesConfiguration to setup new Aeries DB/API
+  -You will need to create an APIKey in Aeries and give it the appropriate read privileges.
+  -You will also need your SQL DB info if you wish to write into Aeries
 
-Also need to generate secure APIKey and create by running Create-SecureCredFile.PS1.
+Your API Key and SQL Credentials will be securely stored encrypted by the user account.
 
-You will need to point to these files when running the commands.
-
-If you run the function inside Get-AeriesStudent.ps1, it will exist in memory and you can use the command. I'm still working on making this module load all the functions so it doesn't have to load every time. It might work right now, but I haven't tested it yet.
+After that, you should be set, you can run New-PSAeriesConfiguration again to setup additional schools, and run "Set-PSAeriesConfiguration ConfigName" to switch between configs.
 
 **Examples:**
 
-*This will list student with ID Number 1234 under school with school code 1*
+*This will list student with ID Number 1234*
 
-Get-AeriesStudent -ID 1234 -APIKey .\APIKey.xml -ConfigPath .\config.PSD1 -SchoolCode 1
+Get-AeriesStudent -ID 1234
 
 -------------------------------
 
 *This will list all students at school code 1*
 
-Get-AeriesStudent -APIKey .\APIKey.xml -ConfigPath .\config.PSD1 -SchoolCode 1
+Get-AeriesStudent -SchoolCode 1
 
+-------------------------------
+
+*This will list all students under all school codes*
+
+Get-AeriesStudent
 -------------------------------
 
 *Accepts pipeline input for multiple Student ID's*
 
-1234, 1235, 5567 | Get-AeriesStudent -APIKey .\APIKey.xml -ConfigPath .\config.PSD1 -SchoolCode 1
+1234, 1235, 5567 | Get-AeriesStudent
 
 -------------------------------
 
-APIKey, ConfigPath, & SchoolCode are all currently required parameters.
-
 **To Do**
 
-Plans to code in direct access to the configpath and school code in different config files so you can switch which school you are working with and not have to manually specify those parameters every time you run the command.
+Build out more functionality. It currently does the bare minimum that I need for account provisioning for students.
+Aeries API Documentation can be found here: https://support.aeries.com/support/solutions/articles/14000077926-aeries-api-full-documentation
+The API only allows writing into certain fields, so SQL has to be used for writing. I'm trying to rely on the API for pulling data.
