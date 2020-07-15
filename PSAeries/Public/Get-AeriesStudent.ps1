@@ -72,7 +72,7 @@ Function Get-AeriesStudent{
             Write-Verbose -Message "Working in SchoolCode $($sc)"
 
             # If no users are specified, get all students
-            try{ #Error handling
+            try{ 
                 if ($ID.Count -lt 1 -and !$Grade -and !$StudentNumber) {
                     Write-Verbose -Message "Listing all students..."
                     $path = $APIURL + 'schools/' + $sc + '/students/'
