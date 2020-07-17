@@ -13,6 +13,4 @@ Function Connect-AeriesAPI {
     catch {
         Write-Error -Message "$_ went wrong."
     }
-    
-    
 }
