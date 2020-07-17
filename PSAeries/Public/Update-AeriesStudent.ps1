@@ -36,9 +36,7 @@ Function Update-AeriesStudent{
     Begin{
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
         Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
-        
         Connect-AeriesSQLDB
-
     }
     Process{
         if ($Email) {
@@ -51,7 +49,6 @@ Function Update-AeriesStudent{
             $SQLCommand.CommandText = "UPDATE $($SQLDB).dbo.STU SET STU.NID = ('"+$Password+"') Where STU.ID = '"+$ID+"'"
 		    $SQLCommand.ExecuteNonQuery()|Out-Null
         }
-        
     }
     End{
         Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
