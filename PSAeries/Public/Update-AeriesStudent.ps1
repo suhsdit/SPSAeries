@@ -37,20 +37,7 @@ Function Update-AeriesStudent{
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
         Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
         
-        #SQL Params (move this into a private function?)
-        #SQL Server Settings
-        $SQLServer = $Config.SQLServer
-        $SQLUser = $SQLCreds.GetNetworkCredential().UserName
-        $SQLPassword = $SQLCreds.GetNetworkCredential().Password
-        $SQLDB = $Config.SQLDB
-        $SQLTable = "STU"
-
-        $SQLConnection = New-Object System.Data.SqlClient.SqlConnection
-        $SQLCommand = New-Object System.Data.SqlClient.SqlCommand
-
-        $SQLConnection.ConnectionString = "Server="+$SQLServer+";Database="+$SQLDB+";User ID="+$SQLUser+";Password="+$SQLPassword
-        $SQLConnection.Open()
-        $SQLCommand.Connection = $SQLConnection
+        Connect-AeriesSQLDB
 
     }
     Process{
