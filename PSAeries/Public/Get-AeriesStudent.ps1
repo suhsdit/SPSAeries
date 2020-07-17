@@ -52,6 +52,7 @@ Function Get-AeriesStudent{
         $headers.Add('accept', 'application/json')
     }
     Process{
+        $result = $null
         $SchoolCodes = @()
 
         # If a school code is not provided, find all school codes
@@ -78,12 +79,12 @@ Function Get-AeriesStudent{
                     Write-Verbose -Message "Listing all students..."
                     $path = $APIURL + 'schools/' + $sc + '/students/'
                     Write-Verbose -Message "path $path"
-                    Invoke-RestMethod $path -Headers $headers
+                    $result += Invoke-RestMethod $path -Headers $headers
                     }
                 elseif ($ID.Count -lt 1 -and $grade -and !$StudentNumber) {
                     Write-Verbose -Message "Listing all students in grade $Grade..."
                     $path = $APIURL + 'schools/' + $sc + '/students/grade/' + $Grade
-                    Invoke-RestMethod $path -Headers $headers
+                    $result += Invoke-RestMethod $path -Headers $headers
                 }
             }
             catch{
@@ -96,7 +97,7 @@ Function Get-AeriesStudent{
                     try{
                         Write-Verbose -Message "Searching for Student with ID Number $stu..."
                         $path = $APIURL + 'schools/' + $sc + '/students/' + $stu
-                        Invoke-RestMethod $path -Headers $headers
+                        $result += Invoke-RestMethod $path -Headers $headers
                     }
                     catch{
                         Write-Error -Message "$_ went wrong on $stu"
@@ -110,7 +111,7 @@ Function Get-AeriesStudent{
                     try{
                         Write-Verbose -Message "Searching for Student with Student Number $stu..."
                         $path = $APIURL + 'schools/' + $sc + '/students/sn/' + $stu
-                        Invoke-RestMethod $path -Headers $headers
+                        $result += Invoke-RestMethod $path -Headers $headers
                     }
                     catch{
                         Write-Error -Message "$_ went wrong on $stu"
@@ -118,6 +119,7 @@ Function Get-AeriesStudent{
                 }
             }
         }
+        $result
     }
     End{
         Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
