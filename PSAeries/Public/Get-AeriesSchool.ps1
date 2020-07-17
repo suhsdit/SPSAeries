@@ -44,14 +44,12 @@ Function Get-AeriesSchool{
             if (!($SchoolCode)) {
                 Write-Verbose -Message "Listing all Schools..."
                 $path = $APIURL + 'schools/'
-                $result = Invoke-RestMethod $path -Headers $headers
-                return $result
+                Invoke-RestMethod $path -Headers $headers
                 }
             else {
                 Write-Verbose -Message "Listing school matching school code $SchoolCode..."
                 $path = $APIURL + 'schools/' + $SchoolCode
-                $result = Invoke-RestMethod $path -Headers $headers
-                return $result
+                Invoke-RestMethod $path -Headers $headers
             }
         }
         catch{
