@@ -61,14 +61,12 @@ Function Get-AeriesStudent{
             $Schools = Get-AeriesSchool
             foreach ($School in $Schools) {
                 $SchoolCodes += $School.SchoolCode
-                write-verbose -Message "School Code Detected: $($School.SchoolCode)"
             }
         }
         else {
             $SchoolCodes += $SchoolCode
         }
         Write-Verbose -Message "All School codes: $($SchoolCodes)"
-        Write-Verbose -Message "First SchoolCode $($SchoolCodes[0])"
 
         ForEach ($sc in $SchoolCodes) {
             Write-Verbose -Message "Working in SchoolCode $($sc)"
