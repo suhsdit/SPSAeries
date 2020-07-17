@@ -52,9 +52,10 @@ Function Get-AeriesStudent{
         $headers.Add('accept', 'application/json')
     }
     Process{
-        $result
-
         $SchoolCodes = @()
+
+        # If a school code is not provided, find all school codes
+        # and add those school codes to the $SchoolCodes array
         if (!$SchoolCode) {
             $Schools = Get-AeriesSchool
             foreach ($School in $Schools) {
@@ -77,12 +78,12 @@ Function Get-AeriesStudent{
                     Write-Verbose -Message "Listing all students..."
                     $path = $APIURL + 'schools/' + $sc + '/students/'
                     Write-Verbose -Message "path $path"
-                    $result += Invoke-RestMethod $path -Headers $headers
+                    Invoke-RestMethod $path -Headers $headers
                     }
-                elseif ($grade) {
+                elseif ($ID.Count -lt 1 -and $grade -and !$StudentNumber) {
                     Write-Verbose -Message "Listing all students in grade $Grade..."
                     $path = $APIURL + 'schools/' + $sc + '/students/grade/' + $Grade
-                    $result += Invoke-RestMethod $path -Headers $headers
+                    Invoke-RestMethod $path -Headers $headers
                 }
             }
             catch{
@@ -95,7 +96,7 @@ Function Get-AeriesStudent{
                     try{
                         Write-Verbose -Message "Searching for Student with ID Number $stu..."
                         $path = $APIURL + 'schools/' + $sc + '/students/' + $stu
-                        $result += Invoke-RestMethod $path -Headers $headers
+                        Invoke-RestMethod $path -Headers $headers
                     }
                     catch{
                         Write-Error -Message "$_ went wrong on $stu"
@@ -109,16 +110,14 @@ Function Get-AeriesStudent{
                     try{
                         Write-Verbose -Message "Searching for Student with Student Number $stu..."
                         $path = $APIURL + 'schools/' + $sc + '/students/sn/' + $stu
-                        $result += Invoke-RestMethod $path -Headers $headers
+                        Invoke-RestMethod $path -Headers $headers
                     }
                     catch{
                         Write-Error -Message "$_ went wrong on $stu"
                     }
                 }
             }
-            
         }
-        return $result
     }
     End{
         Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
