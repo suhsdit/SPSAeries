@@ -27,16 +27,7 @@ Function Get-AeriesSchool{
     Begin{
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
         Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
-        
-        Write-Verbose "Using Config: $Config"
-        # URL to access Aeries API
-        $APIURL = $Config.APIURL
-        Write-Verbose "APIURL: $APIURL"
-
-        #Headers for Aeries API
-        $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-        $headers.Add('AERIES-CERT', $APIKey.GetNetworkCredential().Password)
-        $headers.Add('accept', 'application/json')
+        Connect-AeriesAPI
     }
     Process{
         # If no school is specified, get all schools

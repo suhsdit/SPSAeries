@@ -40,16 +40,7 @@ Function Get-AeriesStudent{
     Begin{
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
         Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
-        
-        Write-Verbose "Using Config: $Config"
-        # URL to access Aeries API
-        $APIURL = $Config.APIURL
-        Write-Verbose "APIURL: $APIURL"
-
-        #Headers for Aeries API
-        $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-        $headers.Add('AERIES-CERT', $APIKey.GetNetworkCredential().Password)
-        $headers.Add('accept', 'application/json')
+        Connect-AeriesAPI
     }
     Process{
         $result = $null
@@ -66,7 +57,7 @@ Function Get-AeriesStudent{
         else {
             $SchoolCodes += $SchoolCode
         }
-        Write-Verbose -Message "All School codes: $($SchoolCodes)"
+        Write-Verbose -Message "Using School codes: $($SchoolCodes)"
 
         ForEach ($sc in $SchoolCodes) {
             Write-Verbose -Message "Working in SchoolCode $($sc)"
