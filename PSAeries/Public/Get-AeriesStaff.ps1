@@ -34,7 +34,7 @@ Function Get-AeriesStaff{
             $result = $null
             
             Write-Verbose -Message "Listing all staff..."
-            $path = $APIURL + 'staff/'
+            $path = $APIURL + "staff/$($ID)"
             Write-Verbose -Message "path $path"
             $result += Invoke-RestMethod $path -Headers $headers
 
