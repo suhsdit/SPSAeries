@@ -51,6 +51,7 @@ Function Update-AeriesStudent{
         }
     }
     End{
+        $Script:SQLConnection.Close()
         Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
     }
 }
