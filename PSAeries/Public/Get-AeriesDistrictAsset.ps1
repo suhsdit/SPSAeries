@@ -1,12 +1,11 @@
 Function Update-AeriesStudent{
 <#
 .SYNOPSIS
-    Updates data in SQL DB For an Aeries Student
+    Get district asset from SQL DB
 .DESCRIPTION
-    The Update-AeriesStudent function updates data for a student in the Aeries DB.
+    The Get-AeriesDistrictAsset function gets asset data from the Aeries DB.
 .EXAMPLE
-    Update-AeriesStudent -ID 12345 -email "littlejohnny@school.edu"
-    Update student with ID number 12345 email address value to be littlejohny@school.edu in Aeries DB.
+    Get-AeriesDistrictAsset -Code CB
 .PARAMETER
 .INPUTS
 .OUTPUTS
@@ -22,15 +21,7 @@ Function Update-AeriesStudent{
             Position=0)]
         [ValidatePattern('[0-9]')] #Validate that the string only contains Numbers
         [Alias("User", "StudentID")]
-        [String[]]$ID,
-
-        # Email address to update
-        [Parameter(Mandatory=$False)]
-        [String]$Email,
-
-        # Update Password
-        [Parameter(Mandatory=$False)]
-        [String]$Password #Should probably change this to SecureString
+        [String[]]$Code
     )
 
     Begin{
@@ -39,16 +30,34 @@ Function Update-AeriesStudent{
         Connect-AeriesSQLDB
     }
     Process{
-        if ($Email) {
-            $SQLCommand.CommandText = "UPDATE $($SQLDB).dbo.STU SET STU.SEM = ('"+$Email+"') Where STU.ID = '"+$ID+"'"
-            Write-Verbose $SQLCommand.CommandText
-            $SQLCommand.ExecuteNonQuery()|Out-Null
+        if ($Code) {
+            # SQL command here
         }
 
-        if ($Password) {
-            $SQLCommand.CommandText = "UPDATE $($SQLDB).dbo.STU SET STU.NID = ('"+$Password+"') Where STU.ID = '"+$ID+"'"
-		    $SQLCommand.ExecuteNonQuery()|Out-Null
+        else {
+            $SQLCommand.CommandText = "SELECT * FROM $($SQLDB).dbo.DRT"
+		    $DistrictAssets = $SQLCommand.ExecuteReader()
+            while ($DistrictAssets.Read()) {
+                Console.WriteLine(String.Format("{0}", $DistrictAssets[0]));
+            }
+            $DistrictAssets.Close()
         }
+       <#
+       .SYNOPSIS
+       Short description
+       
+       .DESCRIPTION
+       Long description
+       
+       .PARAMETER Code
+       Parameter description
+       
+       .EXAMPLE
+       An example
+       
+       .NOTES
+       General notes
+       #>
     }
     End{
         $Script:SQLConnection.Close()
