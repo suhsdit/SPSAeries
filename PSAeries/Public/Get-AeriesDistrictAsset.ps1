@@ -19,8 +19,6 @@ Function Get-AeriesDistrictAsset{
             ValueFromPipelineByPropertyName=$true,
             # HelpMessage='HelpMessage',
             Position=0)]
-        [ValidatePattern('[0-9]')] #Validate that the string only contains Numbers
-        [Alias("User", "StudentID")]
         [String[]]$Code
     )
 
