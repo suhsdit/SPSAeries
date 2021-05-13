@@ -5,7 +5,6 @@ function Connect-AeriesSQLDB {
     $Script:SQLUser = $SQLCreds.GetNetworkCredential().UserName
     $Script:SQLPassword = $SQLCreds.GetNetworkCredential().Password
     $Script:SQLDB = $Config.SQLDB
-    $Script:SQLTable = "STU"
 
     $Script:SQLConnection = New-Object System.Data.SqlClient.SqlConnection
     $Script:SQLCommand = New-Object System.Data.SqlClient.SqlCommand

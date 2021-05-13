@@ -1,4 +1,4 @@
-Function Update-AeriesStudent{
+Function Get-AeriesDistrictAsset{
 <#
 .SYNOPSIS
     Get district asset from SQL DB
@@ -36,11 +36,13 @@ Function Update-AeriesStudent{
 
         else {
             $SQLCommand.CommandText = "SELECT * FROM $($SQLDB).dbo.DRT"
-		    $DistrictAssets = $SQLCommand.ExecuteReader()
-            while ($DistrictAssets.Read()) {
-                Console.WriteLine(String.Format("{0}", $DistrictAssets[0]));
+            $reader = $SQLCommand.ExecuteReader()
+            $Counter = $Reader.FieldCount
+            while ($Reader.Read()) {
+                for ($i = 0; $i -lt $Counter; $i++) {
+                    @{ $Reader.GetName($i) = $Reader.GetValue($i); }
+                }
             }
-            $DistrictAssets.Close()
         }
        <#
        .SYNOPSIS

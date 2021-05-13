@@ -69,7 +69,7 @@ Copyright = '(c) Jesse Geron. All rights reserved.'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @('Connect-AeriesAPI', 'Get-AeriesSchool', 'Get-AeriesStaff', 'Get-AeriesStudent', 'Get-AeriesStudentPicture', 'Get-PSAeriesConfiguration', 'New-PSAeriesConfiguration', 'Set-PSAeriesConfiguration', 'Update-AeriesStudent')
+FunctionsToExport = @('Connect-AeriesAPI', 'Get-AeriesSchool', 'Get-AeriesStaff', 'Get-AeriesStudent', 'Get-AeriesStudentPicture', 'Get-PSAeriesConfiguration', 'New-PSAeriesConfiguration', 'Set-PSAeriesConfiguration', 'Update-AeriesStudent', 'Get-AeriesDistrictAsset')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
