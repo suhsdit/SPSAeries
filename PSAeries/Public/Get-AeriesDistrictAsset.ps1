@@ -19,7 +19,7 @@ Function Get-AeriesDistrictAsset{
             ValueFromPipelineByPropertyName=$true,
             # HelpMessage='HelpMessage',
             Position=0)]
-        [String[]]$Code
+        [String[]]$AssetNumber
     )
 
     Begin{
@@ -30,17 +30,16 @@ Function Get-AeriesDistrictAsset{
     Process{
         $result = @()
 
-        if ($Code) {
-            # SQL command here
+        if ($AssetNumber) {
+            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE RID = $AssetNumber"
+        } else {
+            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT"
         }
 
-        else {
-            $SQLCommand.CommandText = "SELECT * FROM $($SQLDB).dbo.DRT"
-            $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
-            $SqlAdapter.SelectCommand = $SqlCommand
-            $DataSet = New-Object System.Data.DataSet
-            $SqlAdapter.Fill($DataSet)
-        }
+        $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
+        $SqlAdapter.SelectCommand = $SqlCommand
+        $DataSet = New-Object System.Data.DataSet
+        $SqlAdapter.Fill($DataSet)
         
         $DataSet.Tables[0] | ForEach-Object {
             $Asset = [PSCustomObject]@{
@@ -54,6 +53,31 @@ Function Get-AeriesDistrictAsset{
                 'Last#' = $_.LC;
                 'Price' = $_.PR;
                 'Department' = $_.DP;
+                'Publiser' = $_.PB;
+                'Copyright Year' = $_.CR;
+                'Approval Date' = $_.AD;
+                'Vendor' = $_.VN;
+                'Catalog' = $_.CT;
+                'Replacement Cost' = $_.RC;
+                'Library of Congress Number' = $_.LB;
+                'ISBN' = $_.IS;
+                # Aeries API says these fields are Not used
+                #'D1' = $_.D1;
+                #'D2' = $_.D2;
+                #'D3' = $_.D3;
+                #'D4' = $_.D4;
+                'C1' = $_.C1;
+                'C2' = $_.C2;
+                'C3' = $_.C3;
+                'User Code 1' = $_.U1;
+                'User Code 2' = $_.U2;
+                'User Code 3' = $_.U3;
+                'User Code 4' = $_.U4;
+                'User Code 5' = $_.U5;
+                'User Code 6' = $_.U6;
+                'User Code 7' = $_.U7;
+                'User Code 8' = $_.U8;
+                'Type' = $_.TY;
             }
             $result += $Asset
         }
