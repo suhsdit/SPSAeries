@@ -1,4 +1,4 @@
-Function Get-AeriesDistrictAsset{
+Function Get-AeriesDistrictAssetAssociation{
 <#
 .SYNOPSIS
     Get district asset from SQL DB
@@ -19,7 +19,9 @@ Function Get-AeriesDistrictAsset{
             ValueFromPipelineByPropertyName=$true,
             # HelpMessage='HelpMessage',
             Position=0)]
-        [String[]]$AssetNumber
+        # ToDo - better build parameters to work together / separately.
+        [String[]]$AssetNumber,
+        [String[]]$Type
     )
 
     Begin{
@@ -32,6 +34,8 @@ Function Get-AeriesDistrictAsset{
 
         if ($AssetNumber) {
             $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE RID = $AssetNumber"
+        } elseif ($Type) {
+            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE TY = '$Type'"
         } else {
             $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT"
         }
