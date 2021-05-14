@@ -12,7 +12,7 @@
 RootModule = 'PSAeries.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.1'
+ModuleVersion = '0.0.2'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -30,10 +30,10 @@ CompanyName = 'Unknown'
 Copyright = '(c) Jesse Geron. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'This module is used to get data from and write data into Aeries SIS.'
 
 # Minimum version of the PowerShell engine required by this module
-# PowerShellVersion = ''
+# PowerShellVersion = '5.1'
 
 # Name of the PowerShell host required by this module
 # PowerShellHostName = ''
@@ -51,7 +51,7 @@ Copyright = '(c) Jesse Geron. All rights reserved.'
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-# RequiredModules = @()
+#RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()

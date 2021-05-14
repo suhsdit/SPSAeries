@@ -28,20 +28,36 @@ Function Get-AeriesDistrictAsset{
         Connect-AeriesSQLDB
     }
     Process{
+        $result = @()
+
         if ($Code) {
             # SQL command here
         }
 
         else {
             $SQLCommand.CommandText = "SELECT * FROM $($SQLDB).dbo.DRT"
-            $reader = $SQLCommand.ExecuteReader()
-            $Counter = $Reader.FieldCount
-            while ($Reader.Read()) {
-                for ($i = 0; $i -lt $Counter; $i++) {
-                    @{ $Reader.GetName($i) = $Reader.GetValue($i); }
-                }
-            }
+            $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
+            $SqlAdapter.SelectCommand = $SqlCommand
+            $DataSet = New-Object System.Data.DataSet
+            $SqlAdapter.Fill($DataSet)
         }
+        
+        $DataSet.Tables[0] | ForEach-Object {
+            $Asset = [PSCustomObject]@{
+                'Asset#' = $_.RID;
+                'Title' = $_.TI;
+                'Author' = $_.AU;
+                'Edition' = $_.ED;
+                'Copies' = $_.CP;
+                'Available' = $_.AV;
+                'First#' = $_.FC;
+                'Last#' = $_.LC;
+                'Price' = $_.PR;
+                'Department' = $_.DP;
+            }
+            $result += $Asset
+        }
+        $result
        <#
        .SYNOPSIS
        Short description
