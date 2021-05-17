@@ -47,14 +47,14 @@ Function Get-AeriesDistrictAssetTitle{
         
         $DataSet.Tables[0] | ForEach-Object {
             $Asset = [PSCustomObject]@{
-                'Asset#' = $_.RID;
+                'Asset Number' = $_.RID;
                 'Title' = $_.TI;
                 'Author' = $_.AU;
                 'Edition' = $_.ED;
                 'Copies' = $_.CP;
                 'Available' = $_.AV;
-                'First#' = $_.FC;
-                'Last#' = $_.LC;
+                'First Number' = $_.FC;
+                'Last Number' = $_.LC;
                 'Price' = $_.PR;
                 'Department' = $_.DP;
                 'Publiser' = $_.PB;

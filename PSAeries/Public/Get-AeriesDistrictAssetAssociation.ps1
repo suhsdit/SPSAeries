@@ -20,8 +20,9 @@ Function Get-AeriesDistrictAssetAssociation{
             # HelpMessage='HelpMessage',
             Position=0)]
         # ToDo - better build parameters to work together / separately.
-        [String[]]$AssetNumber,
-        [String[]]$Type
+        [String[]]$AssetTitleNumber,
+        [String[]]$AssetItemNumber,
+        [String[]]$UserID
     )
 
     Begin{
@@ -33,11 +34,11 @@ Function Get-AeriesDistrictAssetAssociation{
         $result = @()
 
         if ($AssetNumber) {
-            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE RID = $AssetNumber"
+            #$SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE RID = $AssetNumber"
         } elseif ($Type) {
-            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE TY = '$Type'"
+            #$SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE TY = '$Type'"
         } else {
-            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT"
+            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRA"
         }
 
         $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
@@ -47,41 +48,23 @@ Function Get-AeriesDistrictAssetAssociation{
         
         $DataSet.Tables[0] | ForEach-Object {
             $Asset = [PSCustomObject]@{
-                'Asset#' = $_.RID;
-                'Title' = $_.TI;
-                'Author' = $_.AU;
-                'Edition' = $_.ED;
-                'Copies' = $_.CP;
-                'Available' = $_.AV;
-                'First#' = $_.FC;
-                'Last#' = $_.LC;
-                'Price' = $_.PR;
-                'Department' = $_.DP;
-                'Publiser' = $_.PB;
-                'Copyright Year' = $_.CR;
-                'Approval Date' = $_.AD;
-                'Vendor' = $_.VN;
-                'Catalog' = $_.CT;
-                'Replacement Cost' = $_.RC;
-                'Library of Congress Number' = $_.LB;
-                'ISBN' = $_.IS;
-                # Aeries API says these fields are Not used
-                #'D1' = $_.D1;
-                #'D2' = $_.D2;
-                #'D3' = $_.D3;
-                #'D4' = $_.D4;
-                'C1' = $_.C1;
-                'C2' = $_.C2;
-                'C3' = $_.C3;
-                'User Code 1' = $_.U1;
-                'User Code 2' = $_.U2;
-                'User Code 3' = $_.U3;
-                'User Code 4' = $_.U4;
-                'User Code 5' = $_.U5;
-                'User Code 6' = $_.U6;
-                'User Code 7' = $_.U7;
-                'User Code 8' = $_.U8;
-                'Type' = $_.TY;
+                'Asset Title Number' = $_.RID;
+                'Asset Item Number' = $_.RIN;
+                'SQ' = $_.SQ;
+                'User ID' = $_.ID;
+                'User Type' = $_.ST;
+                #'PD' = $_.PD; - Documentation says this is not used
+                #'' = $_.RM; - Documentation says this is not used
+                #'' = $_.CN; - Documentation says this is not used
+                #'' = $_.SE; - Documentation says this is not used
+                #'Condition' = $_.CC; - Documentation says not currently used. Populated blank.
+                #'Code' = $_.CD; - Documentation says not currently used. Populated blank.
+                'Comment' = $_.CO;
+                'School' = $_.SCL;
+                'Date Issued' = $_.DT;
+                'Date Returned' = $_.RD;
+                'Due Date' = $_.DD;
+                #'' = $_.TG; - Documentation says this is not used
             }
             $result += $Asset
         }
