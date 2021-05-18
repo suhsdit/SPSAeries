@@ -1,4 +1,4 @@
-Function New-AeriesDistrictAssetTitle{
+Function New-AeriesDistrictAssetTitle {
 <#
 .SYNOPSIS
     Get district asset from SQL DB
@@ -15,13 +15,102 @@ Function New-AeriesDistrictAssetTitle{
     [CmdletBinding()] #Enable all the default paramters, including -Verbose
     Param(
         [Parameter(Mandatory=$false,
-            ValueFromPipeline=$true,
+            ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$true,
             # HelpMessage='HelpMessage',
             Position=0)]
-        [String[]]$Title,
+        [Alias("Title")]
+        [String[]]$TI,
 
-        [String[]]$Type
+        [Alias("Author")]
+        [String[]]$AU,
+
+        [Alias("Edition")]
+        [String[]]$ED,
+
+        [Alias("Copies")]
+        [String[]]$CP,
+
+        [Alias("Available")]
+        [String[]]$AV,
+
+        [Alias("First Number")]
+        [String[]]$FC,
+        [String[]]$LC,
+        [String[]]$PR,
+        [String[]]$DP,
+
+        
+        [String[]]$PB,
+
+        
+        [String[]]$CR,
+
+        
+        [String[]]$AD,
+
+        
+        [String[]]$VN,
+
+        
+        [String[]]$CT,
+
+        
+        [String[]]$RC,
+
+        
+        [String[]]$LB,
+
+        
+        [String[]]$IS,
+
+        
+        [String[]]$D1,
+
+        
+        [String[]]$D2,
+
+        
+        [String[]]$D3,
+
+        
+        [String[]]$D4,
+
+        
+        [String[]]$C1,
+
+        
+        [String[]]$C2,
+
+        
+        [String[]]$C3,
+
+        
+        [String[]]$U1,
+
+        
+        [String[]]$U2,
+
+        
+        [String[]]$U3,
+
+        
+        [String[]]$U4,
+
+        
+        [String[]]$U5,
+
+        
+        [String[]]$U6,
+
+        
+        [String[]]$U7,
+
+        
+        [String[]]$U8,
+
+        
+        [String[]]$TY
     )
 
     Begin{
@@ -30,78 +119,28 @@ Function New-AeriesDistrictAssetTitle{
         Connect-AeriesSQLDB
     }
     Process{
-        $result = @()
+        $RID = $null
 
-        if ($AssetNumber) {
-            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE RID = $AssetNumber"
-        } elseif ($Type) {
-            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE TY = '$Type'"
-        } else {
-            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT"
-        }
+        #
+        # Build this into it's own private function??
+        #
+        #$SQLCommand.CommandText = "SELECT MAX(RID) FROM $sqldb.dbo.DRT"
+        #$Reader = $SQLCommand.ExecuteReader()
+        #while ($Reader.Read())
+        #    {
+        #        $RID = $Reader.GetValue(0) + 1;
+        #    }
+        #$Script:SQLConnection.Close()
+        #
+        #Connect-AeriesSQLDB
 
-        $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
-        $SqlAdapter.SelectCommand = $SqlCommand
-        $DataSet = New-Object System.Data.DataSet
-        $SqlAdapter.Fill($DataSet)
-        
-        $DataSet.Tables[0] | ForEach-Object {
-            $Asset = [PSCustomObject]@{
-                'Asset Number' = $_.RID;
-                'Title' = $_.TI;
-                'Author' = $_.AU;
-                'Edition' = $_.ED;
-                'Copies' = $_.CP;
-                'Available' = $_.AV;
-                'First Number' = $_.FC;
-                'Last Number' = $_.LC;
-                'Price' = $_.PR;
-                'Department' = $_.DP;
-                'Publiser' = $_.PB;
-                'Copyright Year' = $_.CR;
-                'Approval Date' = $_.AD;
-                'Vendor' = $_.VN;
-                'Catalog' = $_.CT;
-                'Replacement Cost' = $_.RC;
-                'Library of Congress Number' = $_.LB;
-                'ISBN' = $_.IS;
-                # Aeries API says these fields are Not used
-                #'D1' = $_.D1;
-                #'D2' = $_.D2;
-                #'D3' = $_.D3;
-                #'D4' = $_.D4;
-                'C1' = $_.C1;
-                'C2' = $_.C2;
-                'C3' = $_.C3;
-                'User Code 1' = $_.U1;
-                'User Code 2' = $_.U2;
-                'User Code 3' = $_.U3;
-                'User Code 4' = $_.U4;
-                'User Code 5' = $_.U5;
-                'User Code 6' = $_.U6;
-                'User Code 7' = $_.U7;
-                'User Code 8' = $_.U8;
-                'Type' = $_.TY;
-            }
-            $result += $Asset
-        }
-        $result
-       <#
-       .SYNOPSIS
-       Short description
-       
-       .DESCRIPTION
-       Long description
-       
-       .PARAMETER Code
-       Parameter description
-       
-       .EXAMPLE
-       An example
-       
-       .NOTES
-       General notes
-       #>
+        # AU, ED, CP, AV, FC, LC, PR, DP, PB, CR, AD, VN, CT, RC, LB, IS, D1, D2, D3, D4, C1, C2, C3, U1, U2, U3, U4, U5, U6, U7, U8, TY)
+        #'$AU', '$ED', '$CP', '$AV', '$FC', '$LC', '$PR', '$DP', '$PB', '$CR', '$AD', '$VN', '$CT', '$RC', '$LB', '$IS', '$D1', '$D2', '$D3', '$D4', '$C1', '$C2', '$C3', '$U1', '$U2', '$U3', '$U4', '$U5', '$U6', '$U7', '$U8', '$TY')
+
+        $SQLCommand.CommandText = "INSERT INTO DST20000TEST.dbo.DRT (RID,TI) VALUES (@rid,@title)";
+        $SQLCommand.Parameters.Add("@rid", 74) | Out-Null
+        $SQLCommand.Parameters.Add("@title", 'Yet Another Test') | Out-Null
+        $SQLCommand.ExecuteNonQuery();
     }
     End{
         $Script:SQLConnection.Close()
