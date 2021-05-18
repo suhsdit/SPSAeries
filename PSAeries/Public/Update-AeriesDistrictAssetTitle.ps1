@@ -1,7 +1,7 @@
-Function Get-AeriesDistrictAssetTitle{
+Function Update-AeriesDistrictAssetTitle{
 <#
 .SYNOPSIS
-    Get district asset from SQL DB
+    Updates district asset in SQL DB
 .DESCRIPTION
     The Get-AeriesDistrictAsset function gets asset data from the Aeries DB.
 .EXAMPLE

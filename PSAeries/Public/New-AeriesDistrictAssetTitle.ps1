@@ -1,4 +1,4 @@
-Function Get-AeriesDistrictAssetTitle{
+Function New-AeriesDistrictAssetTitle{
 <#
 .SYNOPSIS
     Get district asset from SQL DB
@@ -19,8 +19,8 @@ Function Get-AeriesDistrictAssetTitle{
             ValueFromPipelineByPropertyName=$true,
             # HelpMessage='HelpMessage',
             Position=0)]
-        # ToDo - better build parameters to work together / separately.
-        [String[]]$AssetTitleNumber,
+        [String[]]$Title,
+
         [String[]]$Type
     )
 
