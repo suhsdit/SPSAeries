@@ -44,7 +44,7 @@ Function Get-AeriesDistrictAssetAssociation{
         $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
         $SqlAdapter.SelectCommand = $SqlCommand
         $DataSet = New-Object System.Data.DataSet
-        $SqlAdapter.Fill($DataSet)
+        $SqlAdapter.Fill($DataSet) | Out-Null
         
         $DataSet.Tables[0] | ForEach-Object {
             $Asset = [PSCustomObject]@{
