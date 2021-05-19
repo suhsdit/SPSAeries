@@ -12,4 +12,11 @@ function Connect-AeriesSQLDB {
     $Script:SQLConnection.ConnectionString = "Server="+$SQLServer+";Database="+$SQLDB+";User ID="+$SQLUser+";Password="+$SQLPassword
     $Script:SQLConnection.Open()
     $Script:SQLCommand.Connection = $SQLConnection
+
+    $Script:SQLSplat = @{
+        ServerInstance = $SQLSERVER;
+        Credential = $SQLCreds;
+        DatabaseName = $SQLDB;
+        SchemaName = "dbo";
+    }
 }

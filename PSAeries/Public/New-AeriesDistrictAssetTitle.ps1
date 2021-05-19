@@ -19,128 +19,153 @@ Function New-AeriesDistrictAssetTitle {
             ValueFromPipelineByPropertyName=$true,
             # HelpMessage='HelpMessage',
             Position=0)]
-        [Alias("Title")]
-        [String[]]$TI,
+        [ValidateLength(0,60)]
+        [Alias("TI")]
+        [String]$Title,
 
-        [Alias("Author")]
-        [String[]]$AU,
+        [ValidateLength(0,50)]
+        [Alias("AU")]
+        [String]$Author,
 
-        [Alias("Edition")]
-        [String[]]$ED,
+        [ValidateLength(0,4)]
+        [Alias("ED")]
+        [String]$Edition,
 
-        [Alias("Copies")]
-        [String[]]$CP,
+        [ValidatePattern('[0-9]*\.[0-9]{2}')] # Check for money format
+        [Alias("PR")]
+        [String]$Price,
 
-        [Alias("Available")]
-        [String[]]$AV,
+        [ValidateLength(0,2)]
+        [Alias("DP")]
+        [String]$Department,
 
-        [Alias("First Number")]
-        [String[]]$FC,
-        [String[]]$LC,
-        [String[]]$PR,
-        [String[]]$DP,
+        [ValidateLength(0,50)]
+        [Alias("PB")]
+        [String]$Publisher,
 
-        
-        [String[]]$PB,
+        [ValidateLength(0,4)]
+        [Alias("CR")]
+        [String]$CopyrightYear,
 
-        
-        [String[]]$CR,
+        [ValidatePattern('[0-9]')]
+        [Alias("VN")]
+        [int]$Vendor,
 
-        
-        [String[]]$AD,
+        [ValidateLength(0,10)]
+        [Alias("CT")]
+        [String]$Catalog,
 
-        
-        [String[]]$VN,
+        [ValidatePattern('[0-9]*\.[0-9]{2}')] # Check for money format
+        [Alias("RC")]
+        [String]$ReplacementCost,
 
-        
-        [String[]]$CT,
+        [ValidateLength(0,16)]
+        [Alias("LB")]
+        [String]$LibraryOfCongressNumber,
 
-        
-        [String[]]$RC,
+        [ValidateLength(0,13)]
+        [Alias("IS")]
+        [String]$ISBN,
 
-        
-        [String[]]$LB,
+        [ValidateLength(0,3)]
+        [String]$U1,
 
-        
-        [String[]]$IS,
+        [ValidateLength(0,3)]
+        [String]$U2,
 
-        
-        [String[]]$D1,
+        [ValidateLength(0,3)]
+        [String]$U3,
 
-        
-        [String[]]$D2,
+        [ValidateLength(0,3)]
+        [String]$U4,
 
-        
-        [String[]]$D3,
+        [ValidateLength(0,3)]
+        [String]$U5,
 
-        
-        [String[]]$D4,
+        [ValidateLength(0,3)]
+        [String]$U6,
 
-        
-        [String[]]$C1,
+        [ValidateLength(0,3)]
+        [String]$U7,
 
-        
-        [String[]]$C2,
+        [ValidateLength(0,3)]
+        [String]$U8,
 
-        
-        [String[]]$C3,
-
-        
-        [String[]]$U1,
-
-        
-        [String[]]$U2,
-
-        
-        [String[]]$U3,
-
-        
-        [String[]]$U4,
-
-        
-        [String[]]$U5,
-
-        
-        [String[]]$U6,
-
-        
-        [String[]]$U7,
-
-        
-        [String[]]$U8,
-
-        
-        [String[]]$TY
+        [ValidateLength(0,3)]
+        [Alias("TY")]
+        [String]$Type
     )
 
     Begin{
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
         Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
         Connect-AeriesSQLDB
+        
     }
     Process{
-        $RID = $null
+        $Data = [pscustomobject]@{
+            RID=((Get-AeriesDistrictAssetTitle).'Asset Number' | Select-Object -Last 1) + 1;
+            TI=''
+            AU=''
+            ED=''
+            CP=0
+            AV=0
+            FC=0
+            LC=0
+            PR=0.00
+            DP=''
+            PB=''
+            CR=''
+            AD=$null
+            VN=0
+            CT=''
+            RC=0.00
+            LB=''
+            IS=''
+            D1=0.00
+            D2=0.00
+            D3=0.00
+            D4=0.00
+            C1=''
+            C2=''
+            C3=''
+            U1=''
+            U2=''
+            U3=''
+            U4=''
+            U5=''
+            U6=''
+            U7=''
+            U8=''
+            TY=''
+            DEL=0
+            DTS=Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
+        }
 
-        #
-        # Build this into it's own private function??
-        #
-        #$SQLCommand.CommandText = "SELECT MAX(RID) FROM $sqldb.dbo.DRT"
-        #$Reader = $SQLCommand.ExecuteReader()
-        #while ($Reader.Read())
-        #    {
-        #        $RID = $Reader.GetValue(0) + 1;
-        #    }
-        #$Script:SQLConnection.Close()
-        #
-        #Connect-AeriesSQLDB
+        if ($Title) { $Data.TI = $Title}
+        if ($Author) { $Data.AU = $Author}
+        if ($Edition) {$Data.ED = $Edition}
+        if ($Price) {$Data.PR = $Price}
+        if ($Department) {$Data.DP = $Department}
+        if ($Publisher) {$Data.PB = $Publisher}
+        if ($CopyrightYear) {$Data.CR = $CopyrightYear}
+        if ($Vendor) {$Data.VN = $Vendor}
+        if ($Catalog) {$Data.CT = $Catalog}
+        if ($ReplacementCost) {$Data.RC = $ReplacementCost}
+        if ($LibraryOfCongressNumber) {$Data.LB = $LibraryOfCongressNumber}
+        if ($ISBN) {$Data.IS = $ISBN}
+        if ($U1) {$Data.U1 = $U1}
+        if ($U2) {$Data.U2 = $U2}
+        if ($U3) {$Data.U3 = $U3}
+        if ($U4) {$Data.U4 = $U4}
+        if ($U5) {$Data.U5 = $U5}
+        if ($U6) {$Data.U6 = $U6}
+        if ($U7) {$Data.U7 = $U7}
+        if ($U8) {$Data.U8 = $U8}
+        if ($Type) {$Data.TY = $Type}
 
-        # AU, ED, CP, AV, FC, LC, PR, DP, PB, CR, AD, VN, CT, RC, LB, IS, D1, D2, D3, D4, C1, C2, C3, U1, U2, U3, U4, U5, U6, U7, U8, TY)
-        #'$AU', '$ED', '$CP', '$AV', '$FC', '$LC', '$PR', '$DP', '$PB', '$CR', '$AD', '$VN', '$CT', '$RC', '$LB', '$IS', '$D1', '$D2', '$D3', '$D4', '$C1', '$C2', '$C3', '$U1', '$U2', '$U3', '$U4', '$U5', '$U6', '$U7', '$U8', '$TY')
+        Write-SqlTableData @SQLSplat -TableName 'DRT' -InputData $Data 
 
-        $SQLCommand.CommandText = "INSERT INTO DST20000TEST.dbo.DRT (RID,TI) VALUES (@rid,@title)";
-        $SQLCommand.Parameters.Add("@rid", 74) | Out-Null
-        $SQLCommand.Parameters.Add("@title", 'Yet Another Test') | Out-Null
-        $SQLCommand.ExecuteNonQuery();
     }
     End{
         $Script:SQLConnection.Close()
