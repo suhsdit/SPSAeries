@@ -1,11 +1,12 @@
 Function New-AeriesDistrictAssetTitle {
 <#
 .SYNOPSIS
-    Get district asset from SQL DB
+    Create new District Asset Title in Aeries
 .DESCRIPTION
-    The Get-AeriesDistrictAsset function gets asset data from the Aeries DB.
+    The New-AeriesDistrictAssetTitle function uses SQL to create a new District Asset Title in the Aeries DB.
 .EXAMPLE
-    Get-AeriesDistrictAsset -Code CB
+    New-AeriesDistrictAssetTitle -Title "A Great book" -Author "The Man" -Edition "3rd" -Price 3.99 -Department 10 -Publisher "Old dude's publishing house" -CopyrightYear 2021 -Vendor 32 -Catalog 1234 -ReplacementCost 3.50 -LibraryOfCongressNumber 12345 -ISBN 1234-5432 -U1 34 -U2 abc -U3 123 -U4 456 
+-U5 234 -U6 345 -U7 678 -U8 789 -Type TXT -Verbose
 .PARAMETER
 .INPUTS
 .OUTPUTS
@@ -165,7 +166,6 @@ Function New-AeriesDistrictAssetTitle {
         if ($Type) {$Data.TY = $Type}
 
         Write-SqlTableData @SQLSplat -TableName 'DRT' -InputData $Data 
-
     }
     End{
         $Script:SQLConnection.Close()
