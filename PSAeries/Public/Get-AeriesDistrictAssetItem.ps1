@@ -63,22 +63,6 @@ Function Get-AeriesDistrictAssetItem{
             $result += $Asset
         }
         $result
-       <#
-       .SYNOPSIS
-       Short description
-       
-       .DESCRIPTION
-       Long description
-       
-       .PARAMETER Code
-       Parameter description
-       
-       .EXAMPLE
-       An example
-       
-       .NOTES
-       General notes
-       #>
     }
     End{
         $Script:SQLConnection.Close()

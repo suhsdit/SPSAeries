@@ -1,6 +1,4 @@
 function Connect-AeriesSQLDB {
-    #SQL Params (move this into a private function?)
-    #SQL Server Settings
     $Script:SQLServer = $Config.SQLServer
     $Script:SQLUser = $SQLCreds.GetNetworkCredential().UserName
     $Script:SQLPassword = $SQLCreds.GetNetworkCredential().Password
@@ -14,9 +12,15 @@ function Connect-AeriesSQLDB {
     $Script:SQLCommand.Connection = $SQLConnection
 
     $Script:SQLSplat = @{
-        ServerInstance = $SQLSERVER;
-        Credential = $SQLCreds;
-        DatabaseName = $SQLDB;
-        SchemaName = "dbo";
+        ServerInstance = $SQLSERVER
+        Credential = $SQLCreds
+        DatabaseName = $SQLDB
+        SchemaName = 'dbo'
+    }
+
+    $Script:InvokeSQLSplat = @{
+        ServerInstance = $SQLSERVER
+        Credential = $SQLCreds
+        Database = $SQLDB
     }
 }

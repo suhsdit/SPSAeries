@@ -28,83 +28,64 @@ Function Get-AeriesDistrictAssetTitle{
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
         Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
         Connect-AeriesSQLDB
+        $result = @()
     }
     Process{
-        $result = @()
+        $SQLData = $null
 
-        if ($AssetNumber) {
-            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE RID = $AssetNumber"
+        if ($AssetTitleNumber) {
+            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRT WHERE RID = $AssetTitleNumber"
         } elseif ($Type) {
-            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE TY = '$Type'"
+            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRT WHERE TY = '$Type'"
         } else {
-            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT"
+            $SQLData = Read-SqlTableData @SQLSplat -TableName "DRT"
         }
 
-        $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
-        $SqlAdapter.SelectCommand = $SqlCommand
-        $DataSet = New-Object System.Data.DataSet
-        $SqlAdapter.Fill($DataSet) | Out-Null
-        
-        $DataSet.Tables[0] | ForEach-Object {
-            $Asset = [PSCustomObject]@{
-                'Asset Number' = $_.RID;
+        $SQLData | ForEach-Object {
+            $AssetTitle = [PSCustomObject]@{
+                'AssetTitleNumber' = $_.RID;
                 'Title' = $_.TI;
                 'Author' = $_.AU;
                 'Edition' = $_.ED;
                 'Copies' = $_.CP;
                 'Available' = $_.AV;
-                'First Number' = $_.FC;
-                'Last Number' = $_.LC;
+                'FirstNumber' = $_.FC;
+                'LastNumber' = $_.LC;
                 'Price' = $_.PR;
                 'Department' = $_.DP;
                 'Publiser' = $_.PB;
-                'Copyright Year' = $_.CR;
-                'Approval Date' = $_.AD;
+                'CopyrightYear' = $_.CR;
+                'ApprovalDate' = $_.AD;
                 'Vendor' = $_.VN;
                 'Catalog' = $_.CT;
-                'Replacement Cost' = $_.RC;
-                'Library of Congress Number' = $_.LB;
+                'ReplacementCost' = $_.RC;
+                'LibraryOfCongressNumber' = $_.LB;
                 'ISBN' = $_.IS;
                 # Aeries API says these fields are Not used
-                #'D1' = $_.D1;
-                #'D2' = $_.D2;
-                #'D3' = $_.D3;
-                #'D4' = $_.D4;
+                # Grab them anyways
+                'D1' = $_.D1;
+                'D2' = $_.D2;
+                'D3' = $_.D3;
+                'D4' = $_.D4;
                 'C1' = $_.C1;
                 'C2' = $_.C2;
                 'C3' = $_.C3;
-                'User Code 1' = $_.U1;
-                'User Code 2' = $_.U2;
-                'User Code 3' = $_.U3;
-                'User Code 4' = $_.U4;
-                'User Code 5' = $_.U5;
-                'User Code 6' = $_.U6;
-                'User Code 7' = $_.U7;
-                'User Code 8' = $_.U8;
+                # End of unused fields
+                'UserCode1' = $_.U1;
+                'UserCode2' = $_.U2;
+                'UserCode3' = $_.U3;
+                'UserCode4' = $_.U4;
+                'UserCode5' = $_.U5;
+                'UserCode6' = $_.U6;
+                'UserCode7' = $_.U7;
+                'UserCode8' = $_.U8;
                 'Type' = $_.TY;
             }
-            $result += $Asset
+            $result += $AssetTitle
         }
         $result
-       <#
-       .SYNOPSIS
-       Short description
-       
-       .DESCRIPTION
-       Long description
-       
-       .PARAMETER Code
-       Parameter description
-       
-       .EXAMPLE
-       An example
-       
-       .NOTES
-       General notes
-       #>
     }
     End{
-        $Script:SQLConnection.Close()
         Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
     }
 }
