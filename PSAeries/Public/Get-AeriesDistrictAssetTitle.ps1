@@ -33,6 +33,7 @@ Function Get-AeriesDistrictAssetTitle{
     Process{
         $SQLData = $null
 
+        
         if ($AssetTitleNumber) {
             $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRT WHERE RID = $AssetTitleNumber"
         } elseif ($Type) {
@@ -86,6 +87,7 @@ Function Get-AeriesDistrictAssetTitle{
         $result
     }
     End{
+        $Script:SQLConnection.Close()
         Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
     }
 }

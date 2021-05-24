@@ -29,42 +29,38 @@ Function Get-AeriesDistrictAssetAssociation{
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
         Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
         Connect-AeriesSQLDB
+        $result = @()
     }
     Process{
-        $result = @()
+        $SQLData = $null
 
-        if ($AssetNumber) {
-            #$SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE RID = $AssetNumber"
-        } elseif ($Type) {
-            #$SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRT WHERE TY = '$Type'"
+        if ($AssetTitleNumber) {
+            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA WHERE RID = $AssetTitleNumber"
+        } elseif ($AssetItemNumber) {
+            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA WHERE RIN = $AssetItemNumber"
         } else {
-            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRA"
+            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA"
         }
-
-        $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
-        $SqlAdapter.SelectCommand = $SqlCommand
-        $DataSet = New-Object System.Data.DataSet
-        $SqlAdapter.Fill($DataSet) | Out-Null
         
-        $DataSet.Tables[0] | ForEach-Object {
+        $SQLData | ForEach-Object {
             $Asset = [PSCustomObject]@{
                 'Asset Title Number' = $_.RID;
                 'Asset Item Number' = $_.RIN;
                 'SQ' = $_.SQ;
                 'User ID' = $_.ID;
                 'User Type' = $_.ST;
-                #'PD' = $_.PD; - Documentation says this is not used
-                #'' = $_.RM; - Documentation says this is not used
-                #'' = $_.CN; - Documentation says this is not used
-                #'' = $_.SE; - Documentation says this is not used
-                #'Condition' = $_.CC; - Documentation says not currently used. Populated blank.
-                #'Code' = $_.CD; - Documentation says not currently used. Populated blank.
+                'PD' = $_.PD; # Documentation says this is not used
+                'RM' = $_.RM; # Documentation says this is not used
+                'CN' = $_.CN; # Documentation says this is not used
+                'SE' = $_.SE; # Documentation says this is not used
+                'Condition' = $_.CC; # Documentation says not currently used. Populated blank.
+                'Code' = $_.CD; # Documentation says not currently used. Populated blank.
                 'Comment' = $_.CO;
                 'School' = $_.SCL;
                 'Date Issued' = $_.DT;
                 'Date Returned' = $_.RD;
                 'Due Date' = $_.DD;
-                #'' = $_.TG; - Documentation says this is not used
+                'TG' = $_.TG; # Documentation says this is not used
             }
             $result += $Asset
         }

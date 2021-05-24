@@ -21,30 +21,30 @@ Function Get-AeriesDistrictAssetItem{
             Position=0)]
         # ToDo - better build parameters to work together / separately.
         [String[]]$AssetTitleNumer,
-        [String[]]$AssetItemNumber,
-        [String[]]$Barcode
+        [String[]]$AssetItemNumber
+        #[String[]]$Barcode,
+        #[String[]]$MACAddress,
+        #[String[]]$Room
     )
 
     Begin{
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
         Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
         Connect-AeriesSQLDB
+        $result = @()
     }
     Process{
-        $result = @()
+        $SQLData = $null
 
-        if ($Barcode) {
-            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRI WHERE RID = $AssetNumber"
+        if ($AssetItemNumber) {
+            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRI WHERE RIN = $AssetItemNumber"
+        } elseif ($AssetTitleNumer) {
+            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRI WHERE RID = $AssetTitleNumber"
         } else {
-            $SQLCommand.CommandText = "SELECT * FROM $SQLDB.dbo.DRI"
+            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRI"
         }
-
-        $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
-        $SqlAdapter.SelectCommand = $SqlCommand
-        $DataSet = New-Object System.Data.DataSet
-        $SqlAdapter.Fill($DataSet) | Out-Null
         
-        $DataSet.Tables[0] | ForEach-Object {
+        $SQLData | ForEach-Object {
             $Asset = [PSCustomObject]@{
                 'Asset Title Number' = $_.RID;
                 'Asset Item Number' = $_.RIN;
