@@ -30,7 +30,7 @@ Function Update-AeriesStudent{
 
         # Update Password
         [Parameter(Mandatory=$False)]
-        [String]$Password #Should probably change this to SecureString
+        [String]$NetworkLoginID #Should probably change this to SecureString
     )
 
     Begin{
@@ -45,8 +45,8 @@ Function Update-AeriesStudent{
             $SQLCommand.ExecuteNonQuery()|Out-Null
         }
 
-        if ($Password) {
-            $SQLCommand.CommandText = "UPDATE $($SQLDB).dbo.STU SET STU.NID = ('"+$Password+"') Where STU.ID = '"+$ID+"'"
+        if ($NetworkLoginID) {
+            $SQLCommand.CommandText = "UPDATE $($SQLDB).dbo.STU SET STU.NID = ('"+$NetworkLoginID+"') Where STU.ID = '"+$ID+"'"
 		    $SQLCommand.ExecuteNonQuery()|Out-Null
         }
     }
