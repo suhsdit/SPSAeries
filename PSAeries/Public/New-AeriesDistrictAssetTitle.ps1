@@ -101,11 +101,10 @@ Function New-AeriesDistrictAssetTitle {
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
         Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
         Connect-AeriesSQLDB
-        
     }
     Process{
         $Data = [pscustomobject]@{
-            RID=((Get-AeriesDistrictAssetTitle).'Asset Number' | Select-Object -Last 1) + 1;
+            RID=((Get-AeriesDistrictAssetTitle).'AssetTitleNumber' | Select-Object -Last 1) + 1;
             TI=''
             AU=''
             ED=''

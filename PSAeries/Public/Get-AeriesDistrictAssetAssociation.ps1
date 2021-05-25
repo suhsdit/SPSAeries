@@ -33,22 +33,37 @@ Function Get-AeriesDistrictAssetAssociation{
     }
     Process{
         $SQLData = $null
+        $query = "SELECT * FROM $SQLDB.dbo.DRA WHERE "
 
-        if ($AssetTitleNumber) {
-            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA WHERE RID = $AssetTitleNumber"
-        } elseif ($AssetItemNumber) {
-            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA WHERE RIN = $AssetItemNumber"
-        } else {
-            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA"
-        }
+        if ($AssetTitleNumber) {$query += "RID = $AssetTitleNumber AND "}
+        if ($AssetItemNumber) {$query += "RIN = $AssetItemNumber AND "}
+        if ($UserID) {$query += "ID = $UserID AND "}
+
+        # Delete's the last ' AND ' on the query
+        $query = $query -replace ".{5}$"
+
+        if (!$AssetTitleNumber -and !$AssetItemNumber -and !$UserID) {$query = "SELECT * FROM $SQLDB.dbo.DRA"}
+
+        Write-Verbose $query
+        $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query $query
+
+        #if ($AssetTitleNumber -and $AssetItemNumber) {
+        #    $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA WHERE RID = $AssetTitleNumber AND RIN = $AssetItemNumber"
+        #} elseif ($AssetTitleNumber) {
+        #    $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA WHERE RID = $AssetTitleNumber"
+        #} elseif ($AssetItemNumber) {
+        #    $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA WHERE RIN = $AssetItemNumber"
+        #} else {
+        #    $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA"
+        #}
         
         $SQLData | ForEach-Object {
             $Asset = [PSCustomObject]@{
-                'Asset Title Number' = $_.RID;
-                'Asset Item Number' = $_.RIN;
+                'AssetTitleNumber' = $_.RID;
+                'AssetItemNumber' = $_.RIN;
                 'SQ' = $_.SQ;
-                'User ID' = $_.ID;
-                'User Type' = $_.ST;
+                'UserID' = $_.ID;
+                'UserType' = $_.ST;
                 'PD' = $_.PD; # Documentation says this is not used
                 'RM' = $_.RM; # Documentation says this is not used
                 'CN' = $_.CN; # Documentation says this is not used
@@ -57,9 +72,9 @@ Function Get-AeriesDistrictAssetAssociation{
                 'Code' = $_.CD; # Documentation says not currently used. Populated blank.
                 'Comment' = $_.CO;
                 'School' = $_.SCL;
-                'Date Issued' = $_.DT;
-                'Date Returned' = $_.RD;
-                'Due Date' = $_.DD;
+                'DateIssued' = $_.DT;
+                'DateReturned' = $_.RD;
+                'DueDate' = $_.DD;
                 'TG' = $_.TG; # Documentation says this is not used
             }
             $result += $Asset

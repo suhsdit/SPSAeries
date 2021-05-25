@@ -46,8 +46,8 @@ Function Get-AeriesDistrictAssetItem{
         
         $SQLData | ForEach-Object {
             $Asset = [PSCustomObject]@{
-                'Asset Title Number' = $_.RID;
-                'Asset Item Number' = $_.RIN;
+                'AssetTitleNumber' = $_.RID;
+                'AssetItemNumber' = $_.RIN;
                 'Barcode' = $_.BC;
                 'Room' = $_.RM;
                 'Condition' = $_.CC;
@@ -57,8 +57,8 @@ Function Get-AeriesDistrictAssetItem{
                 'School' = $_.SCL;
                 'Price' = $_.PR;
                 'Warehouse' = $_.WH;
-                'Serial Number' = $_.SR;
-                'MAC Address' = $_.MAC;
+                'SerialNumber' = $_.SR;
+                'MACAddress' = $_.MAC;
             }
             $result += $Asset
         }

@@ -69,7 +69,7 @@ Description = 'This module is used to get data from and write data into Aeries S
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @('Connect-AeriesAPI', 'Get-AeriesSchool', 'Get-AeriesStaff', 'Get-AeriesStudent', 'Get-AeriesStudentPicture', 'Get-PSAeriesConfiguration', 'New-PSAeriesConfiguration', 'Set-PSAeriesConfiguration', 'Update-AeriesStudent', 'Get-AeriesDistrictAssetTitle', 'Get-AeriesDistrictAssetItem', 'Get-AeriesDistrictAssetAssociation', 'New-AeriesDistrictAssetTitle', 'Update-AeriesDistrictAssetTitle', 'Get-AeriesDistrictAssetAssociation')
+FunctionsToExport = @('Connect-AeriesAPI', 'Get-AeriesSchool', 'Get-AeriesStaff', 'Get-AeriesStudent', 'Get-AeriesStudentPicture', 'Get-PSAeriesConfiguration', 'New-PSAeriesConfiguration', 'Set-PSAeriesConfiguration', 'Update-AeriesStudent', 'Get-AeriesDistrictAssetTitle', 'Get-AeriesDistrictAssetItem', 'Get-AeriesDistrictAssetAssociation', 'New-AeriesDistrictAssetTitle', 'Update-AeriesDistrictAssetTitle', 'Get-AeriesDistrictAssetAssociation', 'New-AeriesDistrictAssetItem', 'New-AeriesDistrictAssetAssociation', 'Update-AeriesDistrictAssetAssociation')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
