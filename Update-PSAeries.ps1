@@ -16,5 +16,3 @@ Function Update-PSAeries {
     Write-Host "[X] Updated PSAeries ready to use. Using Config:" -ForegroundColor Green
     Get-PSAeriesConfiguration
 }
-
-#end
