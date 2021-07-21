@@ -69,7 +69,7 @@ Function New-AeriesDistrictAssetItem {
     Process{
         $Data = [pscustomobject]@{
             RID=$AssetTitleNumber
-            RIN=((Get-AeriesDistrictAssetItem -AssetTitleNumer $AssetTitleNumber).'AssetItemNumber' | Select-Object -Last 1) + 1;
+            RIN=((Get-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber).'AssetItemNumber' | Select-Object -Last 1) + 1;
             BC=''
             RM=''
             CC=''
