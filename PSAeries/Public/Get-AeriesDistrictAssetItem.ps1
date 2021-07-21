@@ -39,8 +39,6 @@ Function Get-AeriesDistrictAssetItem{
 
         if ($AssetTitleNumber) {$query += "RID = $AssetTitleNumber AND "}
         if ($AssetItemNumber) {$query += "RIN = $AssetItemNumber AND "}
-
-
         if (!$AssetItemNumber -and !$AssetTitleNumber) {$query = "SELECT * FROM $SQLDB.dbo.DRI"}
 
         # Delete's the last ' AND ' on the query
