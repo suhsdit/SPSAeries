@@ -89,6 +89,7 @@ Function New-AeriesDistrictAssetAssociation {
             DEL=0
             DTS=Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
         }
+        
         $CheckInDate = (Get-AeriesDistrictAssetAssociation -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber).DateReturned | Select-Object -Last 1
         if ([string]::IsNullOrEmpty($CheckInDate))  {
             write-Error "Cannot create new association - Asset is currently checked out. Please check the asset in before creating a new asset association."
