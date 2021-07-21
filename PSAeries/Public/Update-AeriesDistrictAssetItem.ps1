@@ -105,7 +105,6 @@ Function Update-AeriesDistrictAssetItem {
         [ValidateLength(0,12)]
         [Alias("NewMAC")]
         [String]$NewMACAddress
-
     )
 
     Begin{
@@ -114,34 +113,37 @@ Function Update-AeriesDistrictAssetItem {
         Connect-AeriesSQLDB
     }
     Process{
+        $item = Get-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber
+
         $Data = [pscustomobject]@{
-            RID=$AssetTitleNumber
-            RIN=((Get-AeriesDistrictAssetItem -AssetTitleNumer $AssetTitleNumber).'AssetItemNumber' | Select-Object -Last 1) + 1;
-            BC=''
-            RM=''
-            CC=''
-            ST=''
-            CD=''
-            CO=''
-            SCL=0
-            PR=(Get-AeriesDistrictAssetTitle -AssetTitleNumber $AssetTitleNumber).'Price'
-            WH=''
-            SR=''
-            MAC=''
+            RID=    $item.AssetTitleNumber
+            RIN=    $item.AssetItemNumber
+            BC=     $item.Barcode
+            RM=     $item.Room
+            CC=     $item.Condition
+            ST=     $item.Status
+            CD=     $item.Code
+            CO=     $item.Comment
+            SCL=    $item.School
+            PR=     $item.Price
+            WH=     $item.Warehouse
+            SR=     $item.SerialNumber
+            MAC=    $item.MACAddress
             DEL=0
             DTS=Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
         }
 
-        if ($Barcode) { $Data.BC = $Barcode}
-        if ($Room) {$Data.RM = $Room}
-        if ($Condition) {$Data.CC = $Condition}
-        if ($Code) {$Data.CD = $Code}
-        if ($Comment) {$Data.CO = $Comment}
-        if ($School) {$Data.SCL = $School}
-        if ($Price) {$Data.PR = $Price}
-        if ($Warehouse) {$Data.WH = $Warehouse}
-        if ($SerialNumber) {$Data.SR = $SerialNumber}
-        if ($MACAddress) {$Data.MAC = $MACAddress}
+        if ($NewBarcode) { $Data.BC = $NewBarcode}
+        if ($NewRoom) {$Data.RM = $NewRoom}
+        if ($NewCondition) {$Data.CC = $NewCondition}
+        if ($NewStatus) {$Data.ST = $NewStatus}
+        if ($NewCode) {$Data.CD = $NewCode}
+        if ($NewComment) {$Data.CO = $NewComment}
+        if ($NewSchool) {$Data.SCL = $NewSchool}
+        if ($NewPrice) {$Data.PR = $NewPrice}
+        if ($NewWarehouse) {$Data.WH = $NewWarehouse}
+        if ($NewSerialNumber) {$Data.SR = $NewSerialNumber}
+        if ($NewMACAddress) {$Data.MAC = $NewMACAddress}
 
         Write-SqlTableData @SQLSplat -TableName 'DRI' -InputData $Data 
     }
