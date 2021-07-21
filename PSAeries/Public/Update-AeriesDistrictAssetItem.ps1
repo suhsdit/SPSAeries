@@ -39,6 +39,10 @@ Function Update-AeriesDistrictAssetItem {
         [String]$Room,
 
         [ValidateLength(0,1)]
+        [Alias("ST")]
+        [String]$Status,
+
+        [ValidateLength(0,1)]
         [Alias("CC")]
         [String]$Condition,
         
@@ -75,6 +79,12 @@ Function Update-AeriesDistrictAssetItem {
         [ValidateLength(0,6)]
         [Alias("NewRM")]
         [String]$NewRoom,
+
+        [ValidateLength(0,4)]
+        [ValidatePattern('[SsTt]|(None)')]
+        [ArgumentCompletions('S','T', 'None')]
+        [Alias("ST")]
+        [String]$NewStatus,
 
         [ValidateLength(0,1)]
         [Alias("NewCC")]
@@ -115,37 +125,41 @@ Function Update-AeriesDistrictAssetItem {
     Process{
         $item = Get-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber
 
-        $Data = [pscustomobject]@{
-            RID=    $item.AssetTitleNumber
-            RIN=    $item.AssetItemNumber
-            BC=     $item.Barcode
-            RM=     $item.Room
-            CC=     $item.Condition
-            ST=     $item.Status
-            CD=     $item.Code
-            CO=     $item.Comment
-            SCL=    $item.School
-            PR=     $item.Price
-            WH=     $item.Warehouse
-            SR=     $item.SerialNumber
-            MAC=    $item.MACAddress
-            DEL=0
-            DTS=Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
-        }
-
-        if ($NewBarcode) { $Data.BC = $NewBarcode}
-        if ($NewRoom) {$Data.RM = $NewRoom}
-        if ($NewCondition) {$Data.CC = $NewCondition}
-        if ($NewStatus) {$Data.ST = $NewStatus}
-        if ($NewCode) {$Data.CD = $NewCode}
-        if ($NewComment) {$Data.CO = $NewComment}
-        if ($NewSchool) {$Data.SCL = $NewSchool}
-        if ($NewPrice) {$Data.PR = $NewPrice}
-        if ($NewWarehouse) {$Data.WH = $NewWarehouse}
-        if ($NewSerialNumber) {$Data.SR = $NewSerialNumber}
-        if ($NewMACAddress) {$Data.MAC = $NewMACAddress}
-
         Write-SqlTableData @SQLSplat -TableName 'DRI' -InputData $Data 
+
+        #copied code to change
+        $query = "UPDATE $SQLDB.dbo.DRA SET "
+        $DateTime = Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
+
+        if ($CurrentAsset) {
+            if ($CheckIn) {         $query += "RD = '$DateTime', "}
+            if ($NewComment) {      $query += "CO = '$Comment', "}
+            if ($NewBarcode) {      $query += "BC = '$NewBarcode', "}
+            if ($NewRoom) {         $query += "RM = '$NewRoom', "}
+            if ($NewCondition) {    $query += "CC = '$NewCondition', "}
+            if ($NewSchool) {       $query += "SCL = '$NewSchool', "}
+            if ($NewPrice) {        $query += "PR = '$NewPrice', "}
+            if ($NewWarehouse) {    $query += "WH = '$NewWarehouse', "}
+            if ($NewSerialNumber) { $query += "SR = '$NewSerialNumber', "}
+            if ($NewMACAddress) {   $query += "MAC = '$NewMACAddress', "}
+            if ($NewStatus) {
+                if ($NewStatus -like 'None') {
+                    $query += "ST = '', "
+                } else {
+                    $query += "ST = '$($NewStatus.ToUpper()), '"
+                }
+            }
+        }
+        
+        # Delete's the last ', ' on the query
+        $query = $query -replace ".{2}$"
+
+        $query += " WHERE RID = $AssetTitleNumber AND RIN = $AssetItemNumber"
+
+        Write-Verbose $query
+        Invoke-Sqlcmd @InvokeSQLSplat -Query $query
+
+
     }
     End{
         $Script:SQLConnection.Close()
