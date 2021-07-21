@@ -46,16 +46,6 @@ Function Get-AeriesDistrictAssetAssociation{
 
         Write-Verbose $query
         $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query $query
-
-        #if ($AssetTitleNumber -and $AssetItemNumber) {
-        #    $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA WHERE RID = $AssetTitleNumber AND RIN = $AssetItemNumber"
-        #} elseif ($AssetTitleNumber) {
-        #    $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA WHERE RID = $AssetTitleNumber"
-        #} elseif ($AssetItemNumber) {
-        #    $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA WHERE RIN = $AssetItemNumber"
-        #} else {
-        #    $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRA"
-        #}
         
         $SQLData | ForEach-Object {
             $Asset = [PSCustomObject]@{
