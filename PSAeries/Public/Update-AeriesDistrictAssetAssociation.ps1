@@ -61,9 +61,6 @@ Function Update-AeriesDistrictAssetAssociation {
 
         Write-Verbose $query
         Invoke-Sqlcmd @InvokeSQLSplat -Query $query
-
-        #check this, left off here
-        #if ($CheckIn) {$query = "UPDATE $SQLDB.dbo.DRI SET ST = '' WHERE RID = $AssetTitleNumber AND RIN = $AssetItemNumber AND SQ = $($CurrentAsset.SQ)"}
     }
     End{
         $Script:SQLConnection.Close()
