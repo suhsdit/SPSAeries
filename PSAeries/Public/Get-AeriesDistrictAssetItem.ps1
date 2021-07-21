@@ -20,7 +20,7 @@ Function Get-AeriesDistrictAssetItem{
             # HelpMessage='HelpMessage',
             Position=0)]
         # ToDo - better build parameters to work together / separately.
-        [String[]]$AssetTitleNumer,
+        [String[]]$AssetTitleNumber,
         [String[]]$AssetItemNumber
         #[String[]]$Barcode,
         #[String[]]$MACAddress,
@@ -35,15 +35,19 @@ Function Get-AeriesDistrictAssetItem{
     }
     Process{
         $SQLData = $null
+        $query = "SELECT * FROM $SQLDB.dbo.DRI WHERE "
 
-        if ($AssetItemNumber) {
-            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRI WHERE RIN = $AssetItemNumber"
-        } elseif ($AssetTitleNumer) {
-            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRI WHERE RID = $AssetTitleNumber"
-        } else {
-            $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query "SELECT * FROM $SQLDB.dbo.DRI"
-        }
-        
+        if ($AssetTitleNumber) {$query += "RID = $AssetTitleNumber AND "}
+        if ($AssetItemNumber) {$query += "RIN = $AssetItemNumber AND "}
+
+
+        if (!$AssetItemNumber -and !$AssetTitleNumber) {$query = "SELECT * FROM $SQLDB.dbo.DRI"}
+
+        # Delete's the last ' AND ' on the query
+        $query = $query -replace ".{5}$"
+        Write-Verbose "Query = $($query)"
+        $SQLData = Invoke-Sqlcmd @InvokeSQLSplat -Query $query
+
         $SQLData | ForEach-Object {
             $Asset = [PSCustomObject]@{
                 'AssetTitleNumber' = $_.RID;
