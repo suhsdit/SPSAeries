@@ -46,13 +46,16 @@ Function Update-AeriesDistrictAssetAssociation {
     }
     Process{
         $CurrentAsset = (Get-AeriesDistrictAssetAssociation -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber) | Select-Object -Last 1
+        if (!$CurrentAsset) {
+            Write-Error "No association to update. Try using New-AeriesDistrictAssetAssociation."
+            return
+        }
+        
         $query = "UPDATE $SQLDB.dbo.DRA SET "
         $DateTime = Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
-
-        if ($CurrentAsset) {
-            if ($CheckIn) {$query += "RD = '$DateTime', "}
-            if ($Comment) {$query += "CO = '$Comment', "}
-        }
+        
+        if ($CheckIn) {$query += "RD = '$DateTime', "}
+        if ($Comment) {$query += "CO = '$Comment', "}
         
         # Delete's the last ', ' on the query
         $query = $query -replace ".{2}$"
