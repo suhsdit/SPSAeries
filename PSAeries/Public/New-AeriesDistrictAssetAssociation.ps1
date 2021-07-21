@@ -47,7 +47,7 @@ Function New-AeriesDistrictAssetAssociation {
         [Alias("CO")]
         [String]$Comment,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$false)]
         [Alias("SCL")]
         [int]$School,
 
