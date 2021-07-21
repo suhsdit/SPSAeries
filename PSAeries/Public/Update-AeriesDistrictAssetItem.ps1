@@ -23,9 +23,6 @@ Function Update-AeriesDistrictAssetItem {
         [int]$AssetTitleNumber,
 
         [Parameter(Mandatory=$true,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$true,
-            # HelpMessage='HelpMessage',
             Position=1)]
         [Alias("RIN")]
         [int]$AssetItemNumber,
@@ -83,7 +80,7 @@ Function Update-AeriesDistrictAssetItem {
         [ValidateLength(0,4)]
         [ValidatePattern('[SsTt]|(None)')]
         [ArgumentCompletions('S','T', 'None')]
-        [Alias("ST")]
+        [Alias("NewST")]
         [String]$NewStatus,
 
         [ValidateLength(0,1)]
@@ -117,37 +114,30 @@ Function Update-AeriesDistrictAssetItem {
         [String]$NewMACAddress
     )
 
-    Begin{
+    Begin {
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
         Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
         Connect-AeriesSQLDB
     }
-    Process{
-        $item = Get-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber
-
-        Write-SqlTableData @SQLSplat -TableName 'DRI' -InputData $Data 
-
-        #copied code to change
-        $query = "UPDATE $SQLDB.dbo.DRA SET "
+    Process {
+        $query = "UPDATE $SQLDB.dbo.DRI SET "
         $DateTime = Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
 
-        if ($CurrentAsset) {
-            if ($CheckIn) {         $query += "RD = '$DateTime', "}
-            if ($NewComment) {      $query += "CO = '$Comment', "}
-            if ($NewBarcode) {      $query += "BC = '$NewBarcode', "}
-            if ($NewRoom) {         $query += "RM = '$NewRoom', "}
-            if ($NewCondition) {    $query += "CC = '$NewCondition', "}
-            if ($NewSchool) {       $query += "SCL = '$NewSchool', "}
-            if ($NewPrice) {        $query += "PR = '$NewPrice', "}
-            if ($NewWarehouse) {    $query += "WH = '$NewWarehouse', "}
-            if ($NewSerialNumber) { $query += "SR = '$NewSerialNumber', "}
-            if ($NewMACAddress) {   $query += "MAC = '$NewMACAddress', "}
-            if ($NewStatus) {
-                if ($NewStatus -like 'None') {
-                    $query += "ST = '', "
-                } else {
-                    $query += "ST = '$($NewStatus.ToUpper()), '"
-                }
+        if ($CheckIn) {         $query += "RD = '$DateTime', "}
+        if ($NewComment) {      $query += "CO = '$Comment', "}
+        if ($NewBarcode) {      $query += "BC = '$NewBarcode', "}
+        if ($NewRoom) {         $query += "RM = '$NewRoom', "}
+        if ($NewCondition) {    $query += "CC = '$NewCondition', "}
+        if ($NewSchool) {       $query += "SCL = '$NewSchool', "}
+        if ($NewPrice) {        $query += "PR = '$NewPrice', "}
+        if ($NewWarehouse) {    $query += "WH = '$NewWarehouse', "}
+        if ($NewSerialNumber) { $query += "SR = '$NewSerialNumber', "}
+        if ($NewMACAddress) {   $query += "MAC = '$NewMACAddress', "}
+        if ($NewStatus) {
+            if ($NewStatus -like 'None') {
+                $query += "ST = '', "
+            } else {
+                $query += "ST = '$($NewStatus.ToUpper())', "
             }
         }
         
@@ -158,10 +148,8 @@ Function Update-AeriesDistrictAssetItem {
 
         Write-Verbose $query
         Invoke-Sqlcmd @InvokeSQLSplat -Query $query
-
-
     }
-    End{
+    End {
         $Script:SQLConnection.Close()
         Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
     }
