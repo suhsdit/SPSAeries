@@ -64,6 +64,10 @@ Function New-AeriesDistrictAssetAssociation {
         Connect-AeriesSQLDB
     }
     Process{
+        if (!$school) {
+            $school = (Get-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber).School
+        }
+
         $Data = [pscustomobject]@{
             RID=$AssetTitleNumber
             RIN=$AssetItemNumber;
@@ -84,6 +88,11 @@ Function New-AeriesDistrictAssetAssociation {
             TG='' # Not used
             DEL=0
             DTS=Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
+        }
+        $CheckInDate = (Get-AeriesDistrictAssetAssociation -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber).DateReturned | Select-Object -Last 1
+        if ([string]::IsNullOrEmpty($CheckInDate))  {
+            write-Error "Asset is currently checked out, cannot create new association. Please check the item in before creating new asset association."
+            return;
         }
         
         if ($Comment) {$Data.CO = $Comment}

@@ -19,12 +19,11 @@ Function Get-AeriesDistrictAssetAssociation{
             ValueFromPipelineByPropertyName=$true,
             # HelpMessage='HelpMessage',
             Position=0)]
+        [int]$AssetTitleNumber,
 
-        [String[]]$AssetTitleNumber,
+        [int]$AssetItemNumber,
 
-        [String[]]$AssetItemNumber,
-
-        [String[]]$UserID,
+        [int]$UserID,
 
         [Parameter(Mandatory=$false)]
         [ArgumentCompletions('CheckedOut','CheckedIn',  'All')]

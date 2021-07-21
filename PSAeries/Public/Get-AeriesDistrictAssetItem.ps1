@@ -20,8 +20,8 @@ Function Get-AeriesDistrictAssetItem{
             # HelpMessage='HelpMessage',
             Position=0)]
         # ToDo - better build parameters to work together / separately.
-        [String[]]$AssetTitleNumber,
-        [String[]]$AssetItemNumber
+        [int]$AssetTitleNumber,
+        [int]$AssetItemNumber
         #[String[]]$Barcode,
         #[String[]]$MACAddress,
         #[String[]]$Room
