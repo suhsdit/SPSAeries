@@ -68,32 +68,45 @@ Function New-AeriesDistrictAssetAssociation {
             $school = (Get-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber).School
         }
 
-        $Data = [pscustomobject]@{
-            RID=$AssetTitleNumber
-            RIN=$AssetItemNumber;
-            SQ=((Get-AeriesDistrictAssetAssociation -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber).'SQ' | Select-Object -Last 1) + 1;
-            ID=$UserID
-            ST=$UserType
-            PD=0  # Not used
-            RM='' # Not used
-            CN='' # Not used
-            SE=0  # Not used
-            CC='' # Not currently used. Populated blank. (According to Aeries Documentation)
-            CD='' # Not currently used. Populated blank. (According to Aeries Documentation)
-            CO='' # Comment
-            SCL=$School
-            DT=Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
-            RD=$null
-            DD=$null # Not currently used. Populated blank. (According to Aeries Documentation)
-            TG='' # Not used
-            DEL=0
-            DTS=Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
+        # Check if it has any associations yet.
+        $SQ = $null
+        $recentAssociation = Get-AeriesDistrictAssetAssociation -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber
+        write-verbose "recent association: $($recentAssociation)"
+        if ([string]::IsNullOrEmpty($recentAssociation)) {
+            $SQ = 1;
+        } else {
+            # Get next SQ number
+            $SQ = ($recentAssociation.'SQ' | Select-Object -Last 1) + 1;
+
+            # Don't allow new association if it's still checked out.
+            $CheckInDate = $recentAssociation.DateReturned | Select-Object -Last 1
+            if ([string]::IsNullOrEmpty($CheckInDate))  {
+                write-Error "Cannot create new association - Asset is currently checked out. Please check the asset in before creating a new asset association."
+                return;
+            }
         }
-        
-        $CheckInDate = (Get-AeriesDistrictAssetAssociation -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber).DateReturned | Select-Object -Last 1
-        if ([string]::IsNullOrEmpty($CheckInDate))  {
-            write-Error "Cannot create new association - Asset is currently checked out. Please check the asset in before creating a new asset association."
-            return;
+        Write-Verbose "SQ = $SQ"
+
+        $Data = [pscustomobject]@{
+            RID=    $AssetTitleNumber
+            RIN=    $AssetItemNumber
+            SQ=     $SQ
+            ID=     $UserID
+            ST=     $UserType
+            PD=     0  # Not used
+            RM=     '' # Not used
+            CN=     '' # Not used
+            SE=     0  # Not used
+            CC=     '' # Not currently used. Populated blank. (According to Aeries Documentation)
+            CD=     '' # Not currently used. Populated blank. (According to Aeries Documentation)
+            CO=     '' # Comment
+            SCL=    $School
+            DT=     Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
+            RD=     $null
+            DD=     $null # Not currently used. Populated blank. (According to Aeries Documentation)
+            TG=     '' # Not used
+            DEL=    0
+            DTS=    Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
         }
         
         if ($Comment) {$Data.CO = $Comment}
