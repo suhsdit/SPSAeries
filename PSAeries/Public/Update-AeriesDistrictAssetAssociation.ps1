@@ -54,8 +54,10 @@ Function Update-AeriesDistrictAssetAssociation {
         $query = "UPDATE $SQLDB.dbo.DRA SET "
         $DateTime = Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
         
-        if ($CheckIn) {$query += "RD = '$DateTime', "}
         if ($Comment) {$query += "CO = '$Comment', "}
+        if ($CheckIn) {$query += "RD = '$DateTime', "
+            Update-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber -NewStatus None
+        }
         
         # Delete's the last ', ' on the query
         $query = $query -replace ".{2}$"
