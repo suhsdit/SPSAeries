@@ -91,7 +91,7 @@ Function New-AeriesDistrictAssetAssociation {
         }
         $CheckInDate = (Get-AeriesDistrictAssetAssociation -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber).DateReturned | Select-Object -Last 1
         if ([string]::IsNullOrEmpty($CheckInDate))  {
-            write-Error "Asset is currently checked out, cannot create new association. Please check the item in before creating new asset association."
+            write-Error "Cannot create new association - Asset is currently checked out. Please check the asset in before creating a new asset association."
             return;
         }
         
