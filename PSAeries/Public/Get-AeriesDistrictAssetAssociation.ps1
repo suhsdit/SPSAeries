@@ -19,10 +19,16 @@ Function Get-AeriesDistrictAssetAssociation{
             ValueFromPipelineByPropertyName=$true,
             # HelpMessage='HelpMessage',
             Position=0)]
-        # ToDo - better build parameters to work together / separately.
+
         [String[]]$AssetTitleNumber,
+
         [String[]]$AssetItemNumber,
-        [String[]]$UserID
+
+        [String[]]$UserID,
+
+        [Parameter(Mandatory=$false)]
+        [ArgumentCompletions('CheckedOut','CheckedIn',  'All')]
+        [String]$AssetStatus
     )
 
     Begin{
@@ -38,6 +44,8 @@ Function Get-AeriesDistrictAssetAssociation{
         if ($AssetTitleNumber) {$query += "RID = $AssetTitleNumber AND "}
         if ($AssetItemNumber) {$query += "RIN = $AssetItemNumber AND "}
         if ($UserID) {$query += "ID = $UserID AND "}
+        if ($AssetStatus -eq 'CheckedOut') {$query += "RD is Null AND "}
+        if ($AssetStatus -eq 'CheckedIn') {$query += "RD is Not Null AND "}
 
         # Delete's the last ' AND ' on the query
         $query = $query -replace ".{5}$"
