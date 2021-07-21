@@ -52,10 +52,7 @@ Function New-AeriesDistrictAssetAssociation {
         [int]$School,
 
         [Alias("DT")]
-        [datetime]$DateIssued,
-        
-        [Alias("RD")]
-        [datetime]$DateReturned
+        [datetime]$DateIssued
     )
 
     Begin{
@@ -111,10 +108,12 @@ Function New-AeriesDistrictAssetAssociation {
         
         if ($Comment) {$Data.CO = $Comment}
         if ($DateIssued) {$Data.DT = $DateIssued}
-        if ($DateReturned) {$Data.RD = $DateReturned}
 
         Write-Verbose $Data
-        Write-SqlTableData @SQLSplat -TableName 'DRA' -InputData $Data 
+        Write-SqlTableData @SQLSplat -TableName 'DRA' -InputData $Data
+
+        # Update the Asset Item Status
+        Update-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber -NewStatus $Data.ST
     }
     End{
         $Script:SQLConnection.Close()
