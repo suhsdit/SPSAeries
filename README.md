@@ -4,15 +4,18 @@
 
 **Disclaimer**
 
-This is my very first Powershell module. I still consider myself to be an advanced novice with Powershell, so use with caution. Any help/advice is appreciated!
+This is my very first Powershell module. I still consider myself to be an advanced novice with Powershell, so use with caution! Inspect the code before running in your own production environment! I am not responsible for any unintended consequences, some commands will write directly to your Aeries SQL Database. Again, use with caution.
+
+That said, I could use help from anyone with any level of powershell experience!
 
 **Installation Instructions**
 
-Put the PSAeries folder into your User Module repository at: %UserProfile%\Documents\WindowsPowerShell\Modules
-Run Import-Module PSAeries
-Run New-PSAeriesConfiguration to setup new Aeries DB/API
-  -You will need to create an APIKey in Aeries and give it the appropriate read privileges.
-  -You will also need your SQL DB info if you wish to write into Aeries
+1. Put the PSAeries folder into your User Module repository at: %UserProfile%\Documents\WindowsPowerShell\Modules
+2. Run Import-Module PSAeries
+3. Run New-PSAeriesConfiguration to setup new Aeries DB/API
+  * You will need to create an APIKey in Aeries and give it the appropriate read privileges.
+  * You will also need your SQL DB info if you wish to write into Aeries
+  * Your SQL DB will need to be updated from one year to the next after you do an end of the year rollover.
 
 Your API Key and SQL Credentials will be securely stored encrypted by the user account.
 
