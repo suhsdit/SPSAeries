@@ -102,7 +102,7 @@ Function New-AeriesDistrictAssetAssociation {
             RD=     $null
             DD=     $null # Not currently used. Populated blank. (According to Aeries Documentation)
             TG=     '' # Not used
-            DEL=    0
+            DEL=    0 # 1 is "deleted" and will no longer show in Aeries Web, but will stay in DB for historical purposes
             DTS=    Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
         }
         
