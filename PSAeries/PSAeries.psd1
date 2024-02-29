@@ -24,13 +24,13 @@ GUID = '5c03b3a4-3465-4a2d-84c0-b19bf408d27b'
 Author = 'Jesse Geron'
 
 # Company or vendor of this module
-CompanyName = 'Unknown'
+CompanyName = 'Shasta Union High School District IT Department'
 
 # Copyright statement for this module
-Copyright = '(c) Jesse Geron. All rights reserved.'
+Copyright = '(c) SUHSD IT.'
 
 # Description of the functionality provided by this module
-Description = 'This module is used to get data from and write data into Aeries SIS.'
+Description = 'This module is meant to supplement the official PoshAeries module by providing additional functionality for interacting with the Aeries SIS API.'
 
 # Minimum version of the PowerShell engine required by this module
 # PowerShellVersion = '5.1'
@@ -71,6 +71,7 @@ Description = 'This module is used to get data from and write data into Aeries S
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(  'Connect-AeriesAPI',
                         'Get-AeriesDistrictAssetAssociation',
+                        'Get-AeriesStaffEmail',
                         'Get-SPSAeriesConfiguration',
                         'New-SPSAeriesConfiguration',
                         'Set-SPSAeriesConfiguration',

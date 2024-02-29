@@ -8,6 +8,7 @@ BeforeAll {
     $functions = (  'Get-AeriesDistrictAssetAssociation',
                     'Get-AeriesDistrictAssetItem',
                     'Get-AeriesDistrictAssetTitle',
+                    'Get-AeriesStaffEmail',
                     'Get-SPSAeriesConfiguration',
                     'New-AeriesDistrictAssetAssociation',
                     'New-AeriesDistrictAssetItem',
