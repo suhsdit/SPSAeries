@@ -55,6 +55,7 @@ Function Update-AeriesDistrictAssetAssociation {
         $DateTime = Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff'
         
         if ($Comment) {$query += "CO = '$Comment', "}
+        # Should probably build in a check to see if it's already checked in first.
         if ($CheckIn) {$query += "RD = '$DateTime', "
             Update-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber -NewStatus None
         }
