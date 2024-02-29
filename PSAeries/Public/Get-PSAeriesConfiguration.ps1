@@ -1,11 +1,11 @@
-Function Get-PSAeriesConfiguration{
+Function Get-SPSAeriesConfiguration{
     <#
     .SYNOPSIS
-        Get the current configuration for the PSAeries Module
+        Get the current configuration for the SPSAeries Module
     .DESCRIPTION
-        Get the current configuration for the PSAeries Module
+        Get the current configuration for the SPSAeries Module
     .EXAMPLE
-        Get-PSAeriesConfiguration
+        Get-SPSAeriesConfiguration
         Get the current config
     .PARAMETER
     .INPUTS
@@ -31,7 +31,7 @@ Function Get-PSAeriesConfiguration{
         Process{
             # If no users are specified, get all students
             try{
-                Write-Host $Script:PSAeriesConfigName
+                Write-Host $Script:SPSAeriesConfigName
             }
             catch{
                 Write-Error -Message "$_ went wrong."

@@ -1,11 +1,11 @@
 PSTOPIC
-    about_PSAeries
+    about_SPSAeries
 
 SHORT DESCRIPTION
-    PSAeries allows you to work with the Aeries API through PowerShell functions
+    SPSAeries allows you to work with the Aeries API through PowerShell functions
 
 LONG DESCRIPTION
-    PSAeries allows you to work with the Aeries API through PowerShell functions
+    SPSAeries allows you to work with the Aeries API through PowerShell functions
 
     You can find API documentation here:
         https://support.aeries.com/support/solutions/articles/14000077926-aeries-api-full-documentation

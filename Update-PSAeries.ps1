@@ -1,5 +1,5 @@
 # This function is used to help update the module while developing and testing...
-Function Update-PSAeries {
+Function Update-SPSAeries {
     [CmdletBinding()] #Enable all the default paramters, including -Verbose
     Param(
         [Parameter(Mandatory=$true,
@@ -7,12 +7,12 @@ Function Update-PSAeries {
             Position=0)]
         [string]$config
     )
-    Write-Host "[X] Removing PSAeries Module..." -ForegroundColor Green
-    Get-Module PSAeries | Remove-Module
-    Write-Host "[X] Importing PSAeries Module from .\PSAeries..." -ForegroundColor Green
-    Import-Module .\PSAeries
-    Write-Host "[X] Setting PSAeries config to $config..." -ForegroundColor Green
-    Set-PSAeriesConfiguration $config
-    Write-Host "[X] Updated PSAeries ready to use. Using Config:" -ForegroundColor Green
-    Get-PSAeriesConfiguration
+    Write-Host "[X] Removing SPSAeries Module..." -ForegroundColor Green
+    Get-Module SPSAeries | Remove-Module
+    Write-Host "[X] Importing SPSAeries Module from .\SPSAeries..." -ForegroundColor Green
+    Import-Module .\SPSAeries
+    Write-Host "[X] Setting SPSAeries config to $config..." -ForegroundColor Green
+    Set-SPSAeriesConfiguration $config
+    Write-Host "[X] Updated SPSAeries ready to use. Using Config:" -ForegroundColor Green
+    Get-SPSAeriesConfiguration
 }

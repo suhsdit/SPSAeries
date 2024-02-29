@@ -1,4 +1,4 @@
-**PSAeries**
+**SPSAeries**
 
 *Powershell module for Aeries SIS*
 
@@ -10,16 +10,16 @@ That said, I could use help from anyone with any level of powershell experience!
 
 **Installation Instructions**
 
-1. Put the PSAeries folder into your User Module repository at: %UserProfile%\Documents\WindowsPowerShell\Modules
-2. Run Import-Module PSAeries
-3. Run New-PSAeriesConfiguration to setup new Aeries DB/API
+1. Put the SPSAeries folder into your User Module repository at: %UserProfile%\Documents\WindowsPowerShell\Modules
+2. Run Import-Module SPSAeries
+3. Run New-SPSAeriesConfiguration to setup new Aeries DB/API
   * You will need to create an APIKey in Aeries and give it the appropriate read privileges.
   * You will also need your SQL DB info if you wish to write into Aeries
   * Your SQL DB will need to be updated from one year to the next after you do an end of the year rollover.
 
 Your API Key and SQL Credentials will be securely stored encrypted by the user account.
 
-After that, you should be set, you can run New-PSAeriesConfiguration again to setup additional schools, and run "Set-PSAeriesConfiguration ConfigName" to switch between configs.
+After that, you should be set, you can run New-SPSAeriesConfiguration again to setup additional schools, and run "Set-SPSAeriesConfiguration ConfigName" to switch between configs.
 
 **Examples:**
 
