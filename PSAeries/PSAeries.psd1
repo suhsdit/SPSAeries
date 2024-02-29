@@ -12,7 +12,7 @@
 RootModule = 'SPSAeries.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.3'
+ModuleVersion = '0.2.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -71,12 +71,6 @@ Description = 'This module is used to get data from and write data into Aeries S
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(  'Connect-AeriesAPI',
                         'Get-AeriesDistrictAssetAssociation',
-                        'Get-AeriesSchool',
-                        'Get-AeriesStaff',
-                        'Get-AeriesStudent',
-                        'Get-AeriesStudentExtended',
-                        'Get-AeriesStudentProgram',
-                        'Get-AeriesStudentPicture',
                         'Get-SPSAeriesConfiguration',
                         'New-SPSAeriesConfiguration',
                         'Set-SPSAeriesConfiguration',
