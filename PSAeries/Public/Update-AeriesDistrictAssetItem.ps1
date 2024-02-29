@@ -1,11 +1,11 @@
-Function Update-AeriesDistrictAssetItem {
+Function Update-SPSAeriesDistrictAssetItem {
 <#
 .SYNOPSIS
     Update a District Asset Item in Aeries
 .DESCRIPTION
-    The Update-AeriesDistrictAssetItem function uses SQL to update an existing District Asset Item in the Aeries DB.
+    The Update-SPSAeriesDistrictAssetItem function uses SQL to update an existing District Asset Item in the Aeries DB.
 .EXAMPLE
-    Update-AeriesDistrictAssetItem
+    Update-SPSAeriesDistrictAssetItem
 .PARAMETER
 .INPUTS
 .OUTPUTS

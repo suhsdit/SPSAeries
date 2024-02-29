@@ -70,20 +70,20 @@ Description = 'This module is meant to supplement the official PoshAeries module
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(  'Connect-AeriesAPI',
-                        'Get-AeriesDistrictAssetAssociation',
-                        'Get-AeriesStaffEmail',
+                        'Get-SPSAeriesDistrictAssetAssociation',
+                        'Get-SPSAeriesStaffEmail',
                         'Get-SPSAeriesConfiguration',
                         'New-SPSAeriesConfiguration',
                         'Set-SPSAeriesConfiguration',
-                        'Update-AeriesStudent',
-                        'Get-AeriesDistrictAssetTitle',
-                        'Get-AeriesDistrictAssetItem',
-                        'New-AeriesDistrictAssetTitle',
-                        'Update-AeriesDistrictAssetItem',
-                        'Update-AeriesDistrictAssetTitle',
-                        'New-AeriesDistrictAssetItem',
-                        'New-AeriesDistrictAssetAssociation',
-                        'Update-AeriesDistrictAssetAssociation')
+                        'Update-SPSAeriesStudent',
+                        'Get-SPSAeriesDistrictAssetTitle',
+                        'Get-SPSAeriesDistrictAssetItem',
+                        'New-SPSAeriesDistrictAssetTitle',
+                        'Update-SPSAeriesDistrictAssetItem',
+                        'Update-SPSAeriesDistrictAssetTitle',
+                        'New-SPSAeriesDistrictAssetItem',
+                        'New-SPSAeriesDistrictAssetAssociation',
+                        'Update-SPSAeriesDistrictAssetAssociation')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

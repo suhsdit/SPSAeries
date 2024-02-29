@@ -1,11 +1,11 @@
-Function Update-AeriesStudent{
+Function Update-SPSAeriesStudent{
 <#
 .SYNOPSIS
     Updates data in SQL DB For an Aeries Student
 .DESCRIPTION
-    The Update-AeriesStudent function updates data for a student in the Aeries DB.
+    The Update-SPSAeriesStudent function updates data for a student in the Aeries DB.
 .EXAMPLE
-    Update-AeriesStudent -ID 12345 -email "littlejohnny@school.edu"
+    Update-SPSAeriesStudent -ID 12345 -email "littlejohnny@school.edu"
     Update student with ID number 12345 email address value to be littlejohny@school.edu in Aeries DB.
 .PARAMETER
 .INPUTS

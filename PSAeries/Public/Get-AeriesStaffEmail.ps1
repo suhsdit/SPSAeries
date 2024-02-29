@@ -1,14 +1,14 @@
-Function Get-AeriesStaffEmail{
+Function Get-SPSAeriesStaffEmail{
 <#
 .SYNOPSIS
     Get Staff Email from SQL DB - STF.EM
 .DESCRIPTION
-    The Get-AeriesStaffEmail function retrieves the email address for a staff member from the Aeries DB.
-    This differs from the Get-AeriesStaff function in that it only returns the email address from STF.EM,
-    whereas Get-AeriesStaff's EmailAddress property will return from STF.EM only if UGN.EM does not exist,
+    The Get-SPSAeriesStaffEmail function retrieves the email address for a staff member from the Aeries DB.
+    This differs from the Get-SPSAeriesStaff function in that it only returns the email address from STF.EM,
+    whereas Get-SPSAeriesStaff's EmailAddress property will return from STF.EM only if UGN.EM does not exist,
     otherwise it will return UGN.EM.
 .EXAMPLE
-    Get-AeriesStaffEmail -ID 12345
+    Get-SPSAeriesStaffEmail -ID 12345
 .PARAMETER
 .INPUTS
 .OUTPUTS

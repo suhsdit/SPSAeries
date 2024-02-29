@@ -5,18 +5,18 @@ BeforeAll {
     $module = "SPSAeries"
     $moduleDirectory = (get-item $here).parent.parent.FullName + "\$module"
 
-    $functions = (  'Get-AeriesDistrictAssetAssociation',
-                    'Get-AeriesDistrictAssetItem',
-                    'Get-AeriesDistrictAssetTitle',
-                    'Get-AeriesStaffEmail',
+    $functions = (  'Get-SPSAeriesDistrictAssetAssociation',
+                    'Get-SPSAeriesDistrictAssetItem',
+                    'Get-SPSAeriesDistrictAssetTitle',
+                    'Get-SPSAeriesStaffEmail',
                     'Get-SPSAeriesConfiguration',
-                    'New-AeriesDistrictAssetAssociation',
-                    'New-AeriesDistrictAssetItem',
-                    'New-AeriesDistrictAssetTitle',
+                    'New-SPSAeriesDistrictAssetAssociation',
+                    'New-SPSAeriesDistrictAssetItem',
+                    'New-SPSAeriesDistrictAssetTitle',
                     'New-SPSAeriesConfiguration',
                     'Set-SPSAeriesConfiguration',
-                    'Update-AeriesDistrictAssetTitle',
-                    'Update-AeriesStudent'
+                    'Update-SPSAeriesDistrictAssetTitle',
+                    'Update-SPSAeriesStudent'
             )
 }
 

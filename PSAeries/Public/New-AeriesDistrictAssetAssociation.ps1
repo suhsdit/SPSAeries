@@ -1,15 +1,15 @@
-# May want to reconsider how New-AeriesDistrictAssetAssociation and Update-AeriesDistrictAssetAssociation operate.
+# May want to reconsider how New-SPSAeriesDistrictAssetAssociation and Update-SPSAeriesDistrictAssetAssociation operate.
 # One option would be to get rid of New- and run everything out of update and have -checkin and -checkout parameters
 # Another option would be to make aliases the run those functions ex. CheckIn-AeriesDistrictAsset & CheckOut-AeriesDistrictAsset
 
-Function New-AeriesDistrictAssetAssociation {
+Function New-SPSAeriesDistrictAssetAssociation {
 <#
 .SYNOPSIS
     Create new District Asset Association in Aeries
 .DESCRIPTION
-    The New-AeriesDistrictAssetAssociation function uses SQL to create a new District Asset Association in the Aeries DB.
+    The New-SPSAeriesDistrictAssetAssociation function uses SQL to create a new District Asset Association in the Aeries DB.
 .EXAMPLE
-    New-AeriesDistrictAssetAssociation
+    New-SPSAeriesDistrictAssetAssociation
 .PARAMETER
 .INPUTS
 .OUTPUTS
@@ -62,12 +62,12 @@ Function New-AeriesDistrictAssetAssociation {
     }
     Process{
         if (!$school) {
-            $school = (Get-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber).School
+            $school = (Get-SPSAeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber).School
         }
 
         # Check if it has any associations yet.
         $SQ = $null
-        $recentAssociation = Get-AeriesDistrictAssetAssociation -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber
+        $recentAssociation = Get-SPSAeriesDistrictAssetAssociation -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber
         write-verbose "recent association: $($recentAssociation)"
         if ([string]::IsNullOrEmpty($recentAssociation)) {
             $SQ = 1;
@@ -113,7 +113,7 @@ Function New-AeriesDistrictAssetAssociation {
         Write-SqlTableData @SQLSplat -TableName 'DRA' -InputData $Data
 
         # Update the Asset Item Status
-        Update-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber -NewStatus $Data.ST
+        Update-SPSAeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber -NewStatus $Data.ST
     }
     End{
         $Script:SQLConnection.Close()

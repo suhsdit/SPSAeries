@@ -1,11 +1,11 @@
-Function Get-AeriesDistrictAssetAssociation{
+Function Get-SPSAeriesDistrictAssetAssociation{
 <#
 .SYNOPSIS
     Get district asset from SQL DB
 .DESCRIPTION
-    The Get-AeriesDistrictAsset function gets asset data from the Aeries DB.
+    The Get-SPSAeriesDistrictAsset function gets asset data from the Aeries DB.
 .EXAMPLE
-    Get-AeriesDistrictAsset -Code CB
+    Get-SPSAeriesDistrictAsset -Code CB
 .PARAMETER
 .INPUTS
 .OUTPUTS
