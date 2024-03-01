@@ -1,3 +1,6 @@
+# I think this is deprecated, as  API calls should be made using the AeriesAPI module.
+# If the AeriesApi module is lacking endpoints, then the AeriesApi module should be updated to support those.
+
 Function Connect-AeriesAPI {
     try {
         Write-Verbose "Using Config: $Config"
