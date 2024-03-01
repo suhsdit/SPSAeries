@@ -44,13 +44,18 @@ Function Set-SPSAeriesConfiguration{
 
                 $Script:SQLCreds = Import-Clixml -Path "$Script:SPSAeriesConfigDir\sqlcreds.xml"
                 Write-Verbose -Message "Importing sqlcreds.xml"
+
+                Write-Verbose "Config: $Config"
+                Write-Verbose "URL: $($Config.APIURL)"
+                $URL = $Config.APIURL
+
+                Initialize-AeriesApi -URL $Config.APIURL -Certificate $APIKey.GetNetworkCredential().Password
+
+                $Script:Config.APIURL = "$($URL)/api/v5/"
             }
             catch{
                 Write-Error -Message "$_ went wrong."
             }
-            
-            
-            
         }
         End{
             Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
