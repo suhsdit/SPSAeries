@@ -29,14 +29,14 @@ function Connect-AeriesSQLDB {
     $Script:SQLCommand.Connection = $SQLConnection
 
     $Script:SQLSplat = @{
-        ServerInstance = $SQLSERVER
+        ServerInstance = $SQLServer
         Credential = New-Object System.Management.Automation.PSCredential($SQLUser, (ConvertTo-SecureString $SQLPassword -AsPlainText -Force))
         DatabaseName = $SQLDB
         SchemaName = 'dbo'
     }
 
     $Script:InvokeSQLSplat = @{
-        ServerInstance = $SQLSERVER
+        ServerInstance = $SQLServer
         Credential = New-Object System.Management.Automation.PSCredential($SQLUser, (ConvertTo-SecureString $SQLPassword -AsPlainText -Force))
         Database = $SQLDB
     }
