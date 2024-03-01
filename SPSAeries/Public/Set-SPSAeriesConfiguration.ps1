@@ -49,9 +49,16 @@ Function Set-SPSAeriesConfiguration{
                 Write-Verbose "URL: $($Config.APIURL)"
                 $URL = $Config.APIURL
 
+                # Initializes the official AeriesApi module
                 Initialize-AeriesApi -URL $Config.APIURL -Certificate $APIKey.GetNetworkCredential().Password
 
-                $Script:Config.APIURL = "$($URL)/api/v5/"
+                # Account for a url in config with a trailing slash
+                if ($URL.EndsWith("/")){
+                    $Script:Config.APIURL = "$($URL)api/v5/"
+                }
+                else{
+                    $Script:Config.APIURL = "$($URL)/api/v5/"
+                }
             }
             catch{
                 Write-Error -Message "$_ went wrong."
