@@ -1,11 +1,11 @@
-Function Get-AeriesDistrictAssetItem{
+Function Get-SPSAeriesDistrictAssetItem{
 <#
 .SYNOPSIS
     Get district asset Item from SQL DB
 .DESCRIPTION
-    The Get-AeriesDistrictAssetItem function gets each item that has a unique barcode and is what gets checked in/out to individuals (i.e. a textbook, chromebook, etc.). For example, an individual English textbook is considered an item.
+    The Get-SPSAeriesDistrictAssetItem function gets each item that has a unique barcode and is what gets checked in/out to individuals (i.e. a textbook, chromebook, etc.). For example, an individual English textbook is considered an item.
 .EXAMPLE
-    Get-AeriesDistrictAssetItem -Barcode 8675309
+    Get-SPSAeriesDistrictAssetItem -Barcode 8675309
 .PARAMETER
 .INPUTS
 .OUTPUTS

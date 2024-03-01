@@ -1,11 +1,11 @@
-Function Set-PSAeriesConfiguration{
+Function Set-SPSAeriesConfiguration{
     <#
     .SYNOPSIS
-        Set the configuration to use for the PSAeries Module
+        Set the configuration to use for the SPSAeries Module
     .DESCRIPTION
-        Set the configuration to use for the PSAeries Module
+        Set the configuration to use for the SPSAeries Module
     .EXAMPLE
-        Set-PSAeriesConfiguration -Name SchoolName
+        Set-SPSAeriesConfiguration -Name SchoolName
         Set the configuration to SchoolName
     .PARAMETER
     .INPUTS
@@ -30,19 +30,19 @@ Function Set-PSAeriesConfiguration{
         }
         Process{
             try{
-                Write-Verbose -Message "Changing Config from $($Script:PSAeriesConfigName) to $($Name)"
-                $Script:PSAeriesConfigName = $Name
+                Write-Verbose -Message "Changing Config from $($Script:SPSAeriesConfigName) to $($Name)"
+                $Script:SPSAeriesConfigName = $Name
 
-                $Script:PSAeriesConfigDir = "$Env:USERPROFILE\AppData\Local\powershell\PSAeries\$Name"
-                Write-Verbose -Message "Config dir: $PSAeriesConfigDir"
+                $Script:SPSAeriesConfigDir = "$Env:USERPROFILE\AppData\Local\powershell\SPSAeries\$Name"
+                Write-Verbose -Message "Config dir: $SPSAeriesConfigDir"
 
-                $Script:Config = Get-Content -Raw -Path "$Script:PSAeriesConfigDir\config.json" | ConvertFrom-Json
+                $Script:Config = Get-Content -Raw -Path "$Script:SPSAeriesConfigDir\config.json" | ConvertFrom-Json
                 Write-Verbose -Message "Importing config.json"
 
-                $Script:APIKey = Import-Clixml -Path "$Script:PSAeriesConfigDir\apikey.xml"
+                $Script:APIKey = Import-Clixml -Path "$Script:SPSAeriesConfigDir\apikey.xml"
                 Write-Verbose -Message "Importing apikey.xml"
 
-                $Script:SQLCreds = Import-Clixml -Path "$Script:PSAeriesConfigDir\sqlcreds.xml"
+                $Script:SQLCreds = Import-Clixml -Path "$Script:SPSAeriesConfigDir\sqlcreds.xml"
                 Write-Verbose -Message "Importing sqlcreds.xml"
             }
             catch{

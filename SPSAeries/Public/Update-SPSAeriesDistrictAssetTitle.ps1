@@ -1,11 +1,11 @@
-Function Update-AeriesDistrictAssetTitle {
+Function Update-SPSAeriesDistrictAssetTitle {
     <#
     .SYNOPSIS
         Update an existing District Asset Title in Aeries
     .DESCRIPTION
-        The Update-AeriesDistrictAssetTitle function uses SQL to update an existing District Asset Title in the Aeries DB.
+        The Update-SPSAeriesDistrictAssetTitle function uses SQL to update an existing District Asset Title in the Aeries DB.
     .EXAMPLE
-        Update-AeriesDistrictAssetTitle -AssetTitleNumber 70 -Title "A Great book" -Author "The Man" -Edition "3rd" -Price 3.99 -Department 10 -Publisher "Old dude's publishing house" -CopyrightYear 2021 -Vendor 32 -Catalog 1234 -ReplacementCost 3.50 -LibraryOfCongressNumber 12345 -ISBN 1234-5432 -U1 34 -U2 abc -U3 123 -U4 456 
+        Update-SPSAeriesDistrictAssetTitle -AssetTitleNumber 70 -Title "A Great book" -Author "The Man" -Edition "3rd" -Price 3.99 -Department 10 -Publisher "Old dude's publishing house" -CopyrightYear 2021 -Vendor 32 -Catalog 1234 -ReplacementCost 3.50 -LibraryOfCongressNumber 12345 -ISBN 1234-5432 -U1 34 -U2 abc -U3 123 -U4 456 
     -U5 234 -U6 345 -U7 678 -U8 789 -Type TXT -Verbose
     .PARAMETER
     .INPUTS
@@ -107,7 +107,7 @@ Function Update-AeriesDistrictAssetTitle {
         }
         Process{
             $query = "UPDATE $SQLDB.dbo.DRT SET "
-            if (Get-AeriesDistrictAssetTitle -AssetTitleNumber $AssetTitleNumber) {
+            if (Get-SPSAeriesDistrictAssetTitle -AssetTitleNumber $AssetTitleNumber) {
                 if ($Title) {$query += "TI = '$Title', "}
                 if ($Author) {$query += "AU = '$Author', "}
                 if ($Edition) {$query += "ED = '$Edition', "}

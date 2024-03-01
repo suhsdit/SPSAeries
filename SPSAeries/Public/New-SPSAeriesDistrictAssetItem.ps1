@@ -1,11 +1,11 @@
-Function New-AeriesDistrictAssetItem {
+Function New-SPSAeriesDistrictAssetItem {
 <#
 .SYNOPSIS
     Create new District Asset Item in Aeries
 .DESCRIPTION
-    The New-AeriesDistrictAssetItem function uses SQL to create a new District Asset Item in the Aeries DB.
+    The New-SPSAeriesDistrictAssetItem function uses SQL to create a new District Asset Item in the Aeries DB.
 .EXAMPLE
-    New-AeriesDistrictAssetItem
+    New-SPSAeriesDistrictAssetItem
 .PARAMETER
 .INPUTS
 .OUTPUTS
@@ -69,7 +69,7 @@ Function New-AeriesDistrictAssetItem {
     Process{
         $Data = [pscustomobject]@{
             RID=$AssetTitleNumber
-            RIN=((Get-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber).'AssetItemNumber' | Select-Object -Last 1) + 1;
+            RIN=((Get-SPSAeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber).'AssetItemNumber' | Select-Object -Last 1) + 1;
             BC=''
             RM=''
             CC=''
@@ -77,7 +77,7 @@ Function New-AeriesDistrictAssetItem {
             CD=''
             CO=''
             SCL=0
-            PR=(Get-AeriesDistrictAssetTitle -AssetTitleNumber $AssetTitleNumber).'Price'
+            PR=(Get-SPSAeriesDistrictAssetTitle -AssetTitleNumber $AssetTitleNumber).'Price'
             WH=''
             SR=''
             MAC=''

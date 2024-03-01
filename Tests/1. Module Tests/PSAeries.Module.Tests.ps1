@@ -1,27 +1,22 @@
-$module = "PSAeries"
+$module = "SPSAeries"
 
 BeforeAll {
     $here = $PSScriptRoot
-    $module = "PSAeries"
+    $module = "SPSAeries"
     $moduleDirectory = (get-item $here).parent.parent.FullName + "\$module"
 
-    $functions = (  'Get-AeriesDistrictAssetAssociation',
-                    'Get-AeriesDistrictAssetItem',
-                    'Get-AeriesDistrictAssetTitle',
-                    'Get-AeriesSchool',
-                    'Get-AeriesStaff',
-                    'Get-AeriesStudent',
-                    'Get-AeriesStudentExtended',
-                    'Get-AeriesStudentPicture',
-                    'Get-AeriesStudentProgram',
-                    'Get-PSAeriesConfiguration',
-                    'New-AeriesDistrictAssetAssociation',
-                    'New-AeriesDistrictAssetItem',
-                    'New-AeriesDistrictAssetTitle',
-                    'New-PSAeriesConfiguration',
-                    'Set-PSAeriesConfiguration',
-                    'Update-AeriesDistrictAssetTitle',
-                    'Update-AeriesStudent'
+    $functions = (  'Get-SPSAeriesDistrictAssetAssociation',
+                    'Get-SPSAeriesDistrictAssetItem',
+                    'Get-SPSAeriesDistrictAssetTitle',
+                    'Get-SPSAeriesStaffEmail',
+                    'Get-SPSAeriesConfiguration',
+                    'New-SPSAeriesDistrictAssetAssociation',
+                    'New-SPSAeriesDistrictAssetItem',
+                    'New-SPSAeriesDistrictAssetTitle',
+                    'New-SPSAeriesConfiguration',
+                    'Set-SPSAeriesConfiguration',
+                    'Update-SPSAeriesDistrictAssetTitle',
+                    'Update-SPSAeriesStudent'
             )
 }
 

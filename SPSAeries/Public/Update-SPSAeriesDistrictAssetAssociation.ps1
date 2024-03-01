@@ -1,14 +1,14 @@
-# May want to reconsider how New-AeriesDistrictAssetAssociation and Update-AeriesDistrictAssetAssociation operate.
+# May want to reconsider how New-SPSAeriesDistrictAssetAssociation and Update-SPSAeriesDistrictAssetAssociation operate.
 # One option would be to get rid of New- and run everything out of update and have -checkin and -checkout parameters
 # Another option would be to make aliases the run those functions ex. CheckIn-AeriesDistrictAsset & CheckOut-AeriesDistrictAsset
-Function Update-AeriesDistrictAssetAssociation {
+Function Update-SPSAeriesDistrictAssetAssociation {
 <#
 .SYNOPSIS
     Updates District Asset Association in Aeries
 .DESCRIPTION
-    The Update-AeriesDistrictAssetAssociation function uses SQL to update a new District Asset Association in the Aeries DB.
+    The Update-SPSAeriesDistrictAssetAssociation function uses SQL to update a new District Asset Association in the Aeries DB.
 .EXAMPLE
-    Update-AeriesDistrictAssetAssociation
+    Update-SPSAeriesDistrictAssetAssociation
 .PARAMETER
 .INPUTS
 .OUTPUTS
@@ -45,9 +45,9 @@ Function Update-AeriesDistrictAssetAssociation {
         Connect-AeriesSQLDB
     }
     Process{
-        $CurrentAsset = (Get-AeriesDistrictAssetAssociation -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber) | Select-Object -Last 1
+        $CurrentAsset = (Get-SPSAeriesDistrictAssetAssociation -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber) | Select-Object -Last 1
         if (!$CurrentAsset) {
-            Write-Error "No association to update. Try using New-AeriesDistrictAssetAssociation."
+            Write-Error "No association to update. Try using New-SPSAeriesDistrictAssetAssociation."
             return
         }
         
@@ -57,7 +57,7 @@ Function Update-AeriesDistrictAssetAssociation {
         if ($Comment) {$query += "CO = '$Comment', "}
         # Should probably build in a check to see if it's already checked in first.
         if ($CheckIn) {$query += "RD = '$DateTime', "
-            Update-AeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber -NewStatus None
+            Update-SPSAeriesDistrictAssetItem -AssetTitleNumber $AssetTitleNumber -AssetItemNumber $AssetItemNumber -NewStatus None
         }
         
         # Delete's the last ', ' on the query

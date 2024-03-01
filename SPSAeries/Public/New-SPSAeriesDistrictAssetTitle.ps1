@@ -1,11 +1,11 @@
-Function New-AeriesDistrictAssetTitle {
+Function New-SPSAeriesDistrictAssetTitle {
 <#
 .SYNOPSIS
     Create new District Asset Title in Aeries
 .DESCRIPTION
-    The New-AeriesDistrictAssetTitle function uses SQL to create a new District Asset Title in the Aeries DB.
+    The New-SPSAeriesDistrictAssetTitle function uses SQL to create a new District Asset Title in the Aeries DB.
 .EXAMPLE
-    New-AeriesDistrictAssetTitle -Title "A Great book" -Author "The Man" -Edition "3rd" -Price 3.99 -Department 10 -Publisher "Old dude's publishing house" -CopyrightYear 2021 -Vendor 32 -Catalog 1234 -ReplacementCost 3.50 -LibraryOfCongressNumber 12345 -ISBN 1234-5432 -U1 34 -U2 abc -U3 123 -U4 456 
+    New-SPSAeriesDistrictAssetTitle -Title "A Great book" -Author "The Man" -Edition "3rd" -Price 3.99 -Department 10 -Publisher "Old dude's publishing house" -CopyrightYear 2021 -Vendor 32 -Catalog 1234 -ReplacementCost 3.50 -LibraryOfCongressNumber 12345 -ISBN 1234-5432 -U1 34 -U2 abc -U3 123 -U4 456 
 -U5 234 -U6 345 -U7 678 -U8 789 -Type TXT -Verbose
 .PARAMETER
 .INPUTS
@@ -104,7 +104,7 @@ Function New-AeriesDistrictAssetTitle {
     }
     Process{
         $Data = [pscustomobject]@{
-            RID=((Get-AeriesDistrictAssetTitle).'AssetTitleNumber' | Select-Object -Last 1) + 1;
+            RID=((Get-SPSAeriesDistrictAssetTitle).'AssetTitleNumber' | Select-Object -Last 1) + 1;
             TI=''
             AU=''
             ED=''

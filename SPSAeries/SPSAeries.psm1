@@ -23,10 +23,10 @@ Foreach($import in @($Public + $Private))
 # Export Public functions ($Public.BaseName) for WIP modules
 
 # Aeries Config info, set script variables
-New-Variable -Name PSAeriesConfigName -Scope Script -Force
-New-Variable -Name PSAeriesConfigRoot -Scope Script -Force
-$PSAeriesConfigRoot = "$Env:USERPROFILE\AppData\Local\powershell\PSAeries"
-New-Variable -Name PSAeriesConfigDir -Scope Script -Force
+New-Variable -Name SPSAeriesConfigName -Scope Script -Force
+New-Variable -Name SPSAeriesConfigRoot -Scope Script -Force
+$SPSAeriesConfigRoot = "$Env:USERPROFILE\AppData\Local\powershell\SPSAeries"
+New-Variable -Name SPSAeriesConfigDir -Scope Script -Force
 New-Variable -Name Config -Scope Script -Force
 New-Variable -Name APIKey -Scope Script -Force
 New-Variable -Name SQLCreds -Scope Script -Force

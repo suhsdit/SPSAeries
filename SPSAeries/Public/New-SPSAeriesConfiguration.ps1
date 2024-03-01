@@ -1,11 +1,11 @@
-Function New-PSAeriesConfiguration{
+Function New-SPSAeriesConfiguration{
     <#
     .SYNOPSIS
-        Setup new configuration to use for the PSAeries Module
+        Setup new configuration to use for the SPSAeries Module
     .DESCRIPTION
-        Setup new configuration to use for the PSAeries Module
+        Setup new configuration to use for the SPSAeries Module
     .EXAMPLE
-        New-PSAeriesConfiguration
+        New-SPSAeriesConfiguration
         Start the process of setting config. Follow prompts.
     .PARAMETER
     .INPUTS
@@ -35,23 +35,23 @@ Function New-PSAeriesConfiguration{
                     $Name = Read-Host "Config Name"
                 }
 
-                if(!(Test-Path -path "$PSAeriesConfigRoot\$Name")) {
-                    New-Item -ItemType Directory -Name $Name -Path $Script:PSAeriesConfigRoot
-                    $Script:PSAeriesConfigDir = "$Script:PSAeriesConfigRoot\$Name"
+                if(!(Test-Path -path "$SPSAeriesConfigRoot\$Name")) {
+                    New-Item -ItemType Directory -Name $Name -Path $Script:SPSAeriesConfigRoot
+                    $Script:SPSAeriesConfigDir = "$Script:SPSAeriesConfigRoot\$Name"
 
                     Write-Verbose -Message "Setting new Config file"
 
                     $APIURL = Read-Host 'Aeries API URL'
-                    Get-Credential -UserName ' ' -Message 'Enter your Aeries API Key' | Export-Clixml "$PSAeriesConfigDir\apikey.xml"
+                    Get-Credential -UserName ' ' -Message 'Enter your Aeries API Key' | Export-Clixml "$SPSAeriesConfigDir\apikey.xml"
 
                     $SQLServer = Read-Host 'Aeries SQL DB Server Address'
                     $SQLDB = Read-Host 'Aeries SQL DB'
-                    Get-credential -Message 'Enter your Aeries SQL credentials' | Export-Clixml "$PSAeriesConfigDir\sqlcreds.xml"
+                    Get-credential -Message 'Enter your Aeries SQL credentials' | Export-Clixml "$SPSAeriesConfigDir\sqlcreds.xml"
                     
-                    @{Config=$Name;APIURL=$APIURL;SQLServer=$SQLServer;SQLDB=$SQLDB} | ConvertTo-Json | Out-File "$PSAeriesConfigDir\config.json"
+                    @{Config=$Name;APIURL=$APIURL;SQLServer=$SQLServer;SQLDB=$SQLDB} | ConvertTo-Json | Out-File "$SPSAeriesConfigDir\config.json"
 
                     # Set the new files as active
-                    Set-PSAeriesConfiguration $Name
+                    Set-SPSAeriesConfiguration $Name
                 }
                 else {
                     Write-Warning -Message "Config already exists."
