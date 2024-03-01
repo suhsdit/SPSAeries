@@ -30,7 +30,7 @@ CompanyName = 'Shasta Union High School District IT Department'
 Copyright = '(c) SUHSD IT.'
 
 # Description of the functionality provided by this module
-Description = 'This module is meant to supplement the official PoshAeries module by providing additional functionality for interacting with the Aeries SIS API.'
+Description = 'Supplements official Aeries PS module, providing additional functionality for interacting with the Aeries SIS API.'
 
 # Minimum version of the PowerShell engine required by this module
 # PowerShellVersion = '5.1'
