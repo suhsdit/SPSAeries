@@ -12,7 +12,7 @@ We hold no responsibility for any unintended consequences of running this module
 
 **Installation Instructions**
 
-1. Run New-PSAeriesConfiguration to setup new Aeries DB/API
+* Run New-PSAeriesConfiguration to setup new Aeries DB/API
   * You will need to create an APIKey in Aeries and give it the appropriate read privileges.
   * You will also need your SQL DB info if you wish to write into Aeries
   * Your SQL DB will need to be updated from one year to the next after you do an end of the year rollover.
@@ -49,8 +49,4 @@ Get-AeriesStudent
 
 **To Do**
 
-Update 7/22: Built out functions to interact with Aeries District Assets. In my limited testing, everything appears to work as expected. Need to build out help more on those commands. Also, an update to the below paragraph, I've noticed more fields are available to write into via the API now, so I'd like to look to move the writing capability over to the API where it's supported. There is no API for District Assets though, so there will continue to be some commands that communicate directly with the SQL DB.
-
-Build out more functionality. It currently does the bare minimum that I need for account provisioning for students.
-Aeries API Documentation can be found here: https://support.aeries.com/support/solutions/articles/14000077926-aeries-api-full-documentation
-The API only allows writing into certain fields, so SQL has to be used for writing. I'm trying to rely on the API for pulling data.
+Update 7/22: Built out functions to interact with Aeries District Assets. In my limited testing, everything appears to work as expected. Need to build out help more on those commands.

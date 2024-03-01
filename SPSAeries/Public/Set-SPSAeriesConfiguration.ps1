@@ -44,13 +44,20 @@ Function Set-SPSAeriesConfiguration{
 
                 $Script:SQLCreds = Import-Clixml -Path "$Script:SPSAeriesConfigDir\sqlcreds.xml"
                 Write-Verbose -Message "Importing sqlcreds.xml"
+
+                Write-Verbose "Config: $Config"
+                Write-Verbose "URL: $($Config.APIURL)"
+
+                # Initializes the official AeriesApi module
+                Initialize-AeriesApi -URL $Config.APIURL -Certificate $APIKey.GetNetworkCredential().Password
+
+                # Create URL Path after initialization so we have the root API url in case we need to make any unique API calls of our own
+                $uri = New-Object System.Uri($Config.APIURL)
+                $Script:Config.APIURL = New-Object System.Uri($uri, "api/v5/")
             }
             catch{
                 Write-Error -Message "$_ went wrong."
             }
-            
-            
-            
         }
         End{
             Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."

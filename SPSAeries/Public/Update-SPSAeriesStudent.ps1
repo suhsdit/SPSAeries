@@ -3,7 +3,8 @@ Function Update-SPSAeriesStudent{
 .SYNOPSIS
     Updates data in SQL DB For an Aeries Student
 .DESCRIPTION
-    The Update-SPSAeriesStudent function updates data for a student in the Aeries DB.
+    The Update-SPSAeriesStudent function specifically updates StudentEmail and NetworkLoginID in the Aeries SQL DB.
+    This exists because the Aeries API does not allow for these fields to be updated via the API.
 .EXAMPLE
     Update-SPSAeriesStudent -ID 12345 -email "littlejohnny@school.edu"
     Update student with ID number 12345 email address value to be littlejohny@school.edu in Aeries DB.
@@ -22,13 +23,13 @@ Function Update-SPSAeriesStudent{
             Position=0)]
         [ValidatePattern('[0-9]')] #Validate that the string only contains Numbers
         [Alias("User", "StudentID")]
-        [String[]]$ID,
+        [String]$ID,
 
-        # Email address to update
+        # New Email Address to be updated in the SQL DB for the provided StudentID
         [Parameter(Mandatory=$False)]
         [String]$Email,
 
-        # Update Password
+        # New Network Login ID to be updated in the SQL DB for the provided StudentID
         [Parameter(Mandatory=$False)]
         [String]$NetworkLoginID #Should probably change this to SecureString
     )
@@ -40,14 +41,19 @@ Function Update-SPSAeriesStudent{
     }
     Process{
         if ($Email) {
-            $SQLCommand.CommandText = "UPDATE $($SQLDB).dbo.STU SET STU.SEM = ('"+$Email+"') Where STU.ID = '"+$ID+"'"
-            Write-Verbose $SQLCommand.CommandText
-            $SQLCommand.ExecuteNonQuery()|Out-Null
+            $SQLCommand.CommandText = "UPDATE STU SET SEM = @Email Where ID = @ID"
+            $null = $SQLCommand.Parameters.AddWithValue("@Email", $Email)
+            $null = $SQLCommand.Parameters.AddWithValue("@ID", $ID)
+            $null = $SQLCommand.ExecuteNonQuery()
+            $SQLCommand.Parameters.Clear()
         }
 
         if ($NetworkLoginID) {
-            $SQLCommand.CommandText = "UPDATE $($SQLDB).dbo.STU SET STU.NID = ('"+$NetworkLoginID+"') Where STU.ID = '"+$ID+"'"
-		    $SQLCommand.ExecuteNonQuery()|Out-Null
+            $SQLCommand.CommandText = "UPDATE STU SET NID = @NetworkLoginID Where ID = @ID"
+            $null = $SQLCommand.Parameters.AddWithValue("@NetworkLoginID", $NetworkLoginID)
+            $null = $SQLCommand.Parameters.AddWithValue("@ID", $ID)
+            $null = $SQLCommand.ExecuteNonQuery()|Out-Null
+            $SQLCommand.Parameters.Clear()
         }
     }
     End{
