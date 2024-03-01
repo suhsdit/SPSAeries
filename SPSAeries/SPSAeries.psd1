@@ -73,17 +73,17 @@ FunctionsToExport = @(  'Connect-AeriesAPI',
                         'Get-SPSAeriesDistrictAssetAssociation',
                         'Get-SPSAeriesStaffEmail',
                         'Get-SPSAeriesConfiguration',
-                        'New-SPSAeriesConfiguration',
-                        'Set-SPSAeriesConfiguration',
-                        'Update-SPSAeriesStudent',
                         'Get-SPSAeriesDistrictAssetTitle',
                         'Get-SPSAeriesDistrictAssetItem',
-                        'New-SPSAeriesDistrictAssetTitle',
-                        'Update-SPSAeriesDistrictAssetItem',
-                        'Update-SPSAeriesDistrictAssetTitle',
+                        'New-SPSAeriesConfiguration',
                         'New-SPSAeriesDistrictAssetItem',
                         'New-SPSAeriesDistrictAssetAssociation',
-                        'Update-SPSAeriesDistrictAssetAssociation')
+                        'New-SPSAeriesDistrictAssetTitle',
+                        'Set-SPSAeriesConfiguration',
+                        'Update-SPSAeriesDistrictAssetItem',
+                        'Update-SPSAeriesDistrictAssetTitle',
+                        'Update-SPSAeriesDistrictAssetAssociation',
+                        'Update-SPSAeriesStudent')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
