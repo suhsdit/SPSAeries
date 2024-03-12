@@ -48,6 +48,11 @@ jobs:
         env:
           buildVer: ${{ env.buildVer }}
         run: pwsh -File ./build.ps1
+    
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          Install-Module -Name AeriesAPI -Force
   
       - name: Publish Module to PSGallery
         shell: pwsh
