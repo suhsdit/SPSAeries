@@ -1,0 +1,57 @@
+name: SPSAeries
+
+on:
+  push:
+    branches: [main, dev]
+
+env:
+  major: 0
+  minor: 3
+  patch: ${{ github.run_number }}
+  buildVer: 0.3.${{ github.run_number }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Run Build Script
+      env:
+        buildVer: ${{ env.buildVer }}
+      run: pwsh -File ./build.ps1
+
+    - name: Run Pester tests
+      shell: pwsh
+      run: |
+        Install-Module -Name Pester -Force
+        Invoke-Pester -Script "./Tests/1. Module Tests/SPSAeries.Module.Tests.ps1" -OutputFile "./Tests/1. Module Tests/SPSAeries.Module.Tests.XML" -OutputFormat NUnitXml -EnableExit $true
+
+    - name: Publish test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results
+        path: ./Tests/1. Module Tests/SPSAeries.Module.Tests.XML
+
+  deploy:
+      needs: test
+      runs-on: ubuntu-latest
+      if: github.ref == 'refs/heads/main'
+  
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+  
+      - name: Run build script
+        env:
+          buildVer: ${{ env.buildVer }}
+        run: pwsh -File ./build.ps1
+  
+      - name: Publish Module to PSGallery
+        shell: pwsh
+        run: |
+          $PSGalleryApiKey = '${{ secrets.PSGALLERY_API_KEY }}'
+          Install-Module -Name PowerShellGet -Force
+          Publish-Module -Path ./SPSAeries -NuGetApiKey $PSGalleryApiKey
