@@ -52,6 +52,6 @@ jobs:
       - name: Publish Module to PSGallery
         shell: pwsh
         run: |
-          $PSGalleryApiKey = '${{ secrets.PSGALLERY_API_KEY }}'
+          $PSGalleryApiKey = '${{ secrets.SPSAERIES_NUGET_API_KEY }}'
           Install-Module -Name PowerShellGet -Force
           Publish-Module -Path ./SPSAeries -NuGetApiKey $PSGalleryApiKey
