@@ -1,3 +1,5 @@
+Import-Module .\SPSAeries\SPSAeries.psm1 -Force
+
 InModuleScope SPSAeries {
     Describe "Set-SPSAeriesConfiguration Tests" {
 

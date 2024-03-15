@@ -25,9 +25,7 @@ jobs:
 
     - name: Run Pester tests
       shell: pwsh
-      run: |
-        Install-Module -Name Pester -Force
-        Invoke-Pester -Script "./Tests/*.Tests.ps1" -OutputFile "test-results.xml" -OutputFormat NUnitXml
+      run: Invoke-Pester -Script "./Tests/*.Tests.ps1" -OutputFile "test-results.xml" -OutputFormat NUnitXml
 
     - name: Publish test results
       uses: actions/upload-artifact@v2
