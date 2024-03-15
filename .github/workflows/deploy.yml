@@ -27,13 +27,13 @@ jobs:
       shell: pwsh
       run: |
         Install-Module -Name Pester -Force
-        Invoke-Pester -Script "./Tests/1. Module Tests/SPSAeries.Module.Tests.ps1" -OutputFile "./Tests/1. Module Tests/SPSAeries.Module.Tests.XML" -OutputFormat NUnitXml -EnableExit $true
+        Invoke-Pester -Script "./Tests/*.Tests.ps1" -OutputFile "test-results.xml" -OutputFormat NUnitXml
 
     - name: Publish test results
       uses: actions/upload-artifact@v2
       with:
         name: test-results
-        path: ./Tests/1. Module Tests/SPSAeries.Module.Tests.XML
+        path: test-results.xml
 
   deploy:
       needs: test
