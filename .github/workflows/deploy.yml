@@ -26,6 +26,7 @@ jobs:
     - name: Run Pester tests
       shell: pwsh
       run: |
+        Install-Module -Name AeriesAPI -Force
         Import-Module ./SPSAeries/SPSAeries.psd1
         Invoke-Pester -Script "./Tests/*.Tests.ps1" -OutputFile "test-results.xml" -OutputFormat NUnitXml
 
