@@ -1,10 +1,5 @@
 #Install-Module -Name Configuration -Repository PSGallery -Force
 
-"List all environment variables"
-Get-ChildItem Env: | foreach { "$($_.Name): $($_.Value)" }
-
-"End of environment variables"
-
 "env build ver: $($env:buildVer)"
 
 $buildVersion = $env:buildVer
