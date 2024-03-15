@@ -1,5 +1,5 @@
 InModuleScope SPSAeries {
-    Describe "Set-SPSAeriesConfiguration Tests" {
+    Describe "Set-SPSAeriesConfiguration" {
 
         BeforeAll {
             Mock Get-Content { 
@@ -17,19 +17,19 @@ InModuleScope SPSAeries {
             Mock Initialize-AeriesApi {}
         }
 
-        It "Should call Get-Content mock correctly" {
+        It "Should call Get-Content 1 times" {
             $expectedName = "TestSchool"
             Set-SPSAeriesConfiguration -Name $expectedName -Verbose
             Assert-MockCalled Get-Content -Times 1 -Exactly
         }
 
-        It "Should call Import-Clixml mock correctly" {
+        It "Should call Import-Clixml mock 2 times" {
             $expectedName = "TestSchool"
             Set-SPSAeriesConfiguration -Name $expectedName -Verbose
             Assert-MockCalled Import-Clixml -Times 2 -Exactly
         }
 
-        It "Should correctly handle the object returned by Import-Clixml" {
+        It "Should find config name in the config object returned by Import-Clixml" {
             $expectedName = "Testing123"
 
             Set-SPSAeriesConfiguration -Name $expectedName -Verbose
