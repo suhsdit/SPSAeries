@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Run Build Script
       env:
@@ -30,7 +30,7 @@ jobs:
         Invoke-Pester -Script "./Tests/1. Module Tests/SPSAeries.Module.Tests.ps1" -OutputFile "./Tests/1. Module Tests/SPSAeries.Module.Tests.XML" -OutputFormat NUnitXml -EnableExit $true
 
     - name: Publish test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: test-results
         path: ./Tests/1. Module Tests/SPSAeries.Module.Tests.XML
