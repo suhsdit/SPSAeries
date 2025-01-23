@@ -71,10 +71,11 @@ RequiredModules = @("AeriesAPI")
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(  'Connect-AeriesAPI',
                         'Get-SPSAeriesDistrictAssetAssociation',
-                        'Get-SPSAeriesStaffEmail',
                         'Get-SPSAeriesConfiguration',
                         'Get-SPSAeriesDistrictAssetTitle',
                         'Get-SPSAeriesDistrictAssetItem',
+                        'Get-SPSAeriesStaffEmail',
+                        'Get-SPSAeriesStudentVerificationPassCode',
                         'New-SPSAeriesConfiguration',
                         'New-SPSAeriesDistrictAssetItem',
                         'New-SPSAeriesDistrictAssetAssociation',
