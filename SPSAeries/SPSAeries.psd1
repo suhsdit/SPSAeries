@@ -51,7 +51,14 @@ Description = 'Supplements official Aeries PS module, providing additional funct
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-RequiredModules = @("AeriesAPI","SQLServer")
+RequiredModules = @(
+    @{
+        ModuleName = 'AeriesAPI'
+    },
+    @{
+        ModuleName = 'SqlServer'
+    }
+)
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
