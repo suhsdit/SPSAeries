@@ -17,7 +17,7 @@ function Connect-AeriesSQLDB {
     $Script:SQLConnection = New-Object System.Data.SqlClient.SqlConnection
     $Script:SQLCommand = New-Object System.Data.SqlClient.SqlCommand
 
-    $Script:SQLConnection.ConnectionString = "Server=$SQLServer;Database=$SQLDB;User ID=$SQLUser;Password=$SQLPassword"
+    $Script:SQLConnection.ConnectionString = "Server=$SQLServer;Database=$SQLDB;User ID=$SQLUser;Password=$SQLPassword;TrustServerCertificate=True;"
     
     try {
         $Script:SQLConnection.Open()
@@ -39,5 +39,6 @@ function Connect-AeriesSQLDB {
         ServerInstance = $SQLServer
         Credential = New-Object System.Management.Automation.PSCredential($SQLUser, (ConvertTo-SecureString $SQLPassword -AsPlainText -Force))
         Database = $SQLDB
+        TrustServerCertificate = $true
     }
 }
