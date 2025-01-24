@@ -30,7 +30,7 @@ Function Get-SPSAeriesStudentVerificationPassCode{
         $result = @()
     }
     Process{
-        $query = "SELECT ID, STU FROM $SQLDB.dbo.STU "
+        $query = "SELECT ID, VPC FROM $SQLDB.dbo.STU "
         if ($ID) {
             $query += "WHERE ID = '$ID'"
         }
