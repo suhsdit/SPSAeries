@@ -54,9 +54,11 @@ Description = 'Supplements official Aeries PS module, providing additional funct
 RequiredModules = @(
     @{
         ModuleName = 'AeriesAPI'
+        ModuleVersion = '1.1.0'
     },
     @{
         ModuleName = 'SqlServer'
+        ModuleVersion = '22.3.0'
     }
 )
 
