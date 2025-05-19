@@ -36,23 +36,24 @@ Function Invoke-SPSAeriesSqlQuery {
     .EXAMPLE
         Invoke-SPSAeriesSqlQuery -Query "UPDATE STU SET TG = 'X' WHERE ID = 12345" -Force
         # Executes an UPDATE query, bypassing the confirmation prompt, using active configuration.
-
-    .EXAMPLE
-        Get-Content ".\MyQueries\ComplexQuery.sql" | Invoke-SPSAeriesSqlQuery -As DataTable
-        # Pipes a query from a file into the function, returns a DataTable, using active configuration.
     .NOTES
-        Requires the 'SqlServer' PowerShell module for Invoke-Sqlcmd.
+        Uses the existing SQL connection method from Connect-AeriesSQLDB.
         Ensure that the specified or active SPSAeries configuration has correct SQL server details and credentials.
     .LINK
         Get-SPSAeriesConfiguration
         Set-SPSAeriesConfiguration
         New-SPSAeriesConfiguration
     #>
-    [CmdletBinding(DefaultParameterSetName = 'DirectQuery', SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]પરા
+    [CmdletBinding(DefaultParameterSetName = 'DirectQuery', 
+                   SupportsShouldProcess = $true, 
+                   ConfirmImpact = 'Medium')]
     Param(
         [Parameter(Mandatory = $true,
             ParameterSetName = 'DirectQuery',
+            Position = 0,
+            ValueFromPipeline = $true,
             HelpMessage = 'The SQL query string.')]
+        [ValidateNotNullOrEmpty()]
         [string]$Query,
 
         [Parameter(Mandatory = $true,
@@ -82,10 +83,7 @@ Function Invoke-SPSAeriesSqlQuery {
     Begin {
         Write-Verbose "Starting $($MyInvocation.InvocationName) with ParameterSetName '$($PsCmdlet.ParameterSetName)'"
 
-        if (-not (Get-Command Invoke-Sqlcmd -ErrorAction SilentlyContinue)) {
-            Throw "The 'SqlServer' PowerShell module is not installed or 'Invoke-Sqlcmd' is not available. Please install it by running: Install-Module SqlServer -Scope CurrentUser"
-        }
-
+        # Get the query from file if Path parameter is used
         $resolvedQuery = $null
         if ($PsCmdlet.ParameterSetName -eq 'FromFile') {
             try {
@@ -109,7 +107,12 @@ Function Invoke-SPSAeriesSqlQuery {
         try {
             # Determine the configuration name
             $effectiveConfigName = $null
-            $spsAeriesConfigRootPath = "$Env:USERPROFILE\AppData\Local\powershell\SPSAeries"
+            $spsAeriesConfigRootPath = Join-Path -Path $env:USERPROFILE -ChildPath 'AppData\Local\powershell\SPSAeries'
+
+            # Ensure the config root directory exists
+            if (-not (Test-Path -Path $spsAeriesConfigRootPath -PathType Container)) {
+                throw "SPSAeries configuration directory not found at '$spsAeriesConfigRootPath'. Please create a configuration first using New-SPSAeriesConfiguration."
+            }
 
             if ($PSBoundParameters.ContainsKey('ConfigName')) {
                 $effectiveConfigName = $ConfigName
@@ -120,9 +123,19 @@ Function Invoke-SPSAeriesSqlQuery {
                 Write-Verbose "Using active SPSAeries configuration: $effectiveConfigName"
             }
             else {
-                $availableConfigs = Get-ChildItem -Path $spsAeriesConfigRootPath -Directory | Select-Object -ExpandProperty Name
+                $availableConfigs = Get-ChildItem -Path $spsAeriesConfigRootPath -Directory | 
+                    Where-Object { 
+                        Test-Path -Path (Join-Path $_.FullName 'config.json') -PathType Leaf -and
+                        Test-Path -Path (Join-Path $_.FullName 'sqlcreds.xml') -PathType Leaf
+                    } | 
+                    Select-Object -ExpandProperty Name
+                
+                if (-not $availableConfigs) {
+                    throw "No valid SPSAeries configurations found in '$spsAeriesConfigRootPath'. Please create a configuration first using New-SPSAeriesConfiguration."
+                }
+                
                 $availableConfigsString = $availableConfigs -join ', '
-                Throw "No -ConfigName specified and no active SPSAeries configuration found. Available configurations: $($availableConfigsString). Please use Set-SPSAeriesConfiguration or specify -ConfigName."
+                throw "No -ConfigName specified and no active SPSAeries configuration found. Available configurations: $availableConfigsString. Please use Set-SPSAeriesConfiguration or specify -ConfigName."
             }
 
             $targetConfigPath = Join-Path -Path $spsAeriesConfigRootPath -ChildPath $effectiveConfigName
@@ -149,9 +162,12 @@ Function Invoke-SPSAeriesSqlQuery {
 
             # Safety check for modifying queries
             $isModifyingQuery = $false
-            if ($resolvedQuery.ToLower() -match '^\s*(insert|update|delete|create|alter|drop|truncate|execute|exec|merge)\s') {
+            $queryFirstWord = ($resolvedQuery -split '\s+', 2 | Select-Object -First 1).ToLower()
+            $modifyingVerbs = @('insert', 'update', 'delete', 'create', 'alter', 'drop', 'truncate', 'execute', 'exec', 'merge', 'grant', 'revoke', 'deny')
+            
+            if ($modifyingVerbs -contains $queryFirstWord) {
                 $isModifyingQuery = $true
-                Write-Verbose "Query appears to be a data/schema modification query."
+                Write-Verbose "Query appears to be a data/schema modification query (starts with: $queryFirstWord)."
             }
 
             if ($isModifyingQuery -and (-not $Force)) {
@@ -161,80 +177,99 @@ Function Invoke-SPSAeriesSqlQuery {
                 }
             }
 
-            $sqlCmdParams = @{
-                ServerInstance = $loadedConfig.SQLServer
-                Database       = $loadedConfig.SQLDB
-                Credential     = $loadedSqlCreds
-                QueryTimeout   = $QueryTimeout
-                TrustServerCertificate = $true
-                ErrorAction    = 'Stop' # Ensure script stops on SQL errors
-            }
-
-            if ($PsCmdlet.ParameterSetName -eq 'FromFile') {
-                $sqlCmdParams.InputFile = $Path
-            } else {
-                $sqlCmdParams.Query = $resolvedQuery
-            }
-
-            if ($As -eq 'Scalar') {
-                $sqlCmdParams.ExecuteAs = 'Scalar'
-            }
-
-            Write-Verbose "Executing SQL query against $($loadedConfig.SQLServer)/$($loadedConfig.SQLDB)..."
-            $results = Invoke-Sqlcmd @sqlCmdParams
+            # Set the config and creds to use the existing Connect-AeriesSQLDB function
+            $Script:Config = $loadedConfig
+            $Script:SQLCreds = $loadedSqlCreds
             
-            if ($null -eq $results -and $As -ne 'NonQuery' -and $As -ne 'Scalar') {
-                 Write-Verbose "Query returned no data."
-                 return # Return nothing explicitly for empty PSObject/DataTable if results are null
+            # Call the existing Connect-AeriesSQLDB function to set up the connection
+            . $PSScriptRoot\..\Private\Connect-AeriesSQLDB.ps1
+            Connect-AeriesSQLDB
+            
+            # Check if connection was successful
+            if (-not $Script:SQLConnection -or $Script:SQLConnection.State -ne 'Open') {
+                throw "Failed to establish SQL connection to $($loadedConfig.SQLServer)."
+            }
+            
+            # Create and execute the command
+            $command = New-Object System.Data.SqlClient.SqlCommand($resolvedQuery, $Script:SQLConnection)
+            $command.CommandTimeout = $QueryTimeout
+            
+            # Execute based on the output type
+            Write-Verbose "Executing SQL query against $($loadedConfig.SQLServer)/$($loadedConfig.SQLDB)..."
+            
+            if ($As -eq 'Scalar') {
+                $results = $command.ExecuteScalar()
+            } elseif ($As -eq 'NonQuery') {
+                $results = $command.ExecuteNonQuery()
+            } else {
+                # For PSObject or DataTable, we'll use a DataAdapter
+                $adapter = New-Object System.Data.SqlClient.SqlDataAdapter($command)
+                $dataSet = New-Object System.Data.DataSet
+                $adapter.Fill($dataSet) | Out-Null
+                
+                if ($dataSet.Tables.Count -gt 0) {
+                    if ($As -eq 'DataTable') {
+                        $results = $dataSet.Tables[0]
+                    } else {
+                        # Convert DataTable to array of PSObjects
+                        $results = @($dataSet.Tables[0] | ForEach-Object { [PSCustomObject]$_ })
+                    }
+                } else {
+                    $results = $null
+                }
+            }
+            
+            # Only check for null results if not a NonQuery or Scalar operation
+            if ($As -notin @('NonQuery', 'Scalar') -and $null -eq $results) {
+                Write-Verbose "Query returned no data."
+                return # Return nothing explicitly for empty PSObject/DataTable if results are null
             }
 
+            # Output the results based on the requested format
             switch ($As) {
                 'PSObject' {
-                    if ($results -is [System.Data.DataRow]) { $results = @($results) } # Handle single row result
-                    if ($results -is [System.Data.DataRow[]]) {
-                        $output = @()
-                        foreach ($row in $results) {
-                            $obj = New-Object PSCustomObject
-                            foreach ($col in $row.Table.Columns) {
-                                $obj | Add-Member -MemberType NoteProperty -Name $col.ColumnName -Value $row[$col.ColumnName]
-                            }
-                            $output += $obj
-                        }
-                        Write-Output $output
-                    } else {
-                        # This case might occur if Invoke-Sqlcmd returns something unexpected for PSObject that isn't DataRows
-                        Write-Output $results 
-                    }
+                    # Results are already converted to PSObjects in the main execution block
+                    Write-Output $results
                 }
                 'DataTable' {
-                    if ($results -is [System.Data.DataRow]) { $results = @($results) } # Handle single row result
-                    if ($results -is [System.Data.DataRow[]] -and $results.Count -gt 0) {
-                        Write-Output $results[0].Table
-                    }
-                    # If $results is null or not DataRow[], it means no data for DataTable or already a different type
-                    # Or if it was a non-SELECT query that still returned null (NonQuery would be better 'As' type here)
+                    # Results are already a DataTable when As is 'DataTable'
+                    Write-Output $results
                 }
                 'NonQuery' {
-                    Write-Verbose "NonQuery operation completed."
-                    # Invoke-Sqlcmd typically doesn't return output for DML/DDL unless there's an error (which ErrorAction Stop would catch)
-                    # Or it might return messages if -Verbose is passed to Invoke-Sqlcmd, but we're not doing that directly.
-                    # We can assume success if no exception was thrown.
+                    # For NonQuery, output the number of rows affected
+                    Write-Verbose "NonQuery operation completed. Rows affected: $results"
+                    Write-Output $results
                 }
                 'Scalar' {
+                    # For Scalar, output the single value
                     Write-Output $results
                 }
             }
         }
         catch {
-            Write-Error "An error occurred while executing the SQL query: $($_.Exception.Message)"
+            $errorMessage = "An error occurred while executing the SQL query: $($_.Exception.Message)"
             if ($_.Exception.InnerException) {
-                Write-Error "Inner Exception: $($_.Exception.InnerException.Message)"
+                $errorMessage += "`nInner Exception: $($_.Exception.InnerException.Message)"
             }
-            # For more detailed SQL errors if available from Invoke-Sqlcmd exception
-            if ($_.Exception.ErrorRecord.Exception -is [System.Data.SqlClient.SqlException]) {
-                 foreach ($sqlError in $_.Exception.ErrorRecord.Exception.Errors) {
-                    Write-Error "SQL Error $($sqlError.Number) on Line $($sqlError.LineNumber): $($sqlError.Message)"
-                 }
+            
+            # For SQL-specific errors
+            if ($_.Exception -is [System.Data.SqlClient.SqlException]) {
+                $sqlException = $_.Exception
+                $errorMessage += "`nSQL Error $($sqlException.Number): $($sqlException.Message)"
+                $errorMessage += "`nLine Number: $($sqlException.LineNumber)"
+                $errorMessage += "`nSource: $($sqlException.Source)"
+                $errorMessage += "`nServer: $($sqlException.Server)"
+                $errorMessage += "`nProcedure: $($sqlException.Procedure)"
+            }
+            
+            Write-Error $errorMessage -ErrorAction Stop
+        }
+        finally {
+            # Ensure the SQL connection is properly closed
+            if ($null -ne $Script:SQLConnection -and $Script:SQLConnection.State -eq 'Open') {
+                $Script:SQLConnection.Close()
+                $Script:SQLConnection.Dispose()
+                $Script:SQLConnection = $null
             }
         }
     }
