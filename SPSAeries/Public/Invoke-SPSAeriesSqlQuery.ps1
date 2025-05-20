@@ -12,9 +12,7 @@ Function Invoke-SPSAeriesSqlQuery {
         The SQL query string to execute. Mutually exclusive with -Path.
     .PARAMETER Path
         The full path to a .sql file containing the SQL query to execute. Mutually exclusive with -Query.
-    .PARAMETER ConfigName
-        The name of the SPSAeries configuration to use. 
-        If not specified, the function will attempt to use the currently active configuration (set by Set-SPSAeriesConfiguration).
+
     .PARAMETER As
         Determines how the query results are returned.
         - PSObject (Default): Returns an array of PSCustomObjects.
@@ -62,11 +60,7 @@ Function Invoke-SPSAeriesSqlQuery {
         [ValidateScript({ Test-Path $_ -PathType Leaf })]
         [string]$Path,
 
-        [Parameter(Mandatory = $false,
-            HelpMessage = 'SPSAeries configuration name to use.')]
-        [string]$ConfigName,
-
-        [Parameter(Mandatory = $false,
+[Parameter(Mandatory = $false,
             HelpMessage = 'Output format: PSObject, DataTable, NonQuery, Scalar.')]
         [ValidateSet('PSObject', 'DataTable', 'NonQuery', 'Scalar')]
         [string]$As = 'PSObject',
@@ -105,60 +99,15 @@ Function Invoke-SPSAeriesSqlQuery {
 
     Process {
         try {
-            # Determine the configuration name
-            $effectiveConfigName = $null
-            $spsAeriesConfigRootPath = Join-Path -Path $env:USERPROFILE -ChildPath 'AppData\Local\powershell\SPSAeries'
-
-            # Ensure the config root directory exists
-            if (-not (Test-Path -Path $spsAeriesConfigRootPath -PathType Container)) {
-                throw "SPSAeries configuration directory not found at '$spsAeriesConfigRootPath'. Please create a configuration first using New-SPSAeriesConfiguration."
+            # Use the global configuration set by Set-SPSAeriesConfig
+            if (-not $Script:Config -or -not $Script:SQLCreds) {
+                throw "No active SPSAeries configuration found. Please run Set-SPSAeriesConfiguration first."
             }
-
-            if ($PSBoundParameters.ContainsKey('ConfigName')) {
-                $effectiveConfigName = $ConfigName
-                Write-Verbose "Using specified configuration: $effectiveConfigName"
-            }
-            elseif ($Script:SPSAeriesConfigName) {
-                $effectiveConfigName = $Script:SPSAeriesConfigName
-                Write-Verbose "Using active SPSAeries configuration: $effectiveConfigName"
-            }
-            else {
-                $availableConfigs = Get-ChildItem -Path $spsAeriesConfigRootPath -Directory | 
-                    Where-Object { 
-                        Test-Path -Path (Join-Path $_.FullName 'config.json') -PathType Leaf -and
-                        Test-Path -Path (Join-Path $_.FullName 'sqlcreds.xml') -PathType Leaf
-                    } | 
-                    Select-Object -ExpandProperty Name
-                
-                if (-not $availableConfigs) {
-                    throw "No valid SPSAeries configurations found in '$spsAeriesConfigRootPath'. Please create a configuration first using New-SPSAeriesConfiguration."
-                }
-                
-                $availableConfigsString = $availableConfigs -join ', '
-                throw "No -ConfigName specified and no active SPSAeries configuration found. Available configurations: $availableConfigsString. Please use Set-SPSAeriesConfiguration or specify -ConfigName."
-            }
-
-            $targetConfigPath = Join-Path -Path $spsAeriesConfigRootPath -ChildPath $effectiveConfigName
-
-            if (-not (Test-Path $targetConfigPath -PathType Container)) {
-                Throw "Configuration directory '$effectiveConfigName' not found at '$targetConfigPath'."
-            }
-
-            # Load configuration details
-            $configJsonPath = Join-Path -Path $targetConfigPath -ChildPath "config.json"
-            $sqlCredsXmlPath = Join-Path -Path $targetConfigPath -ChildPath "sqlcreds.xml"
-
-            if (-not (Test-Path $configJsonPath -PathType Leaf)) {
-                Throw "config.json not found for configuration '$effectiveConfigName' at '$configJsonPath'."
-            }
-            if (-not (Test-Path $sqlCredsXmlPath -PathType Leaf)) {
-                Throw "sqlcreds.xml not found for configuration '$effectiveConfigName' at '$sqlCredsXmlPath'."
-            }
-
-            $loadedConfig = Get-Content -Raw -Path $configJsonPath | ConvertFrom-Json -ErrorAction Stop
-            $loadedSqlCreds = Import-Clixml -Path $sqlCredsXmlPath -ErrorAction Stop
-
-            Write-Verbose "Successfully loaded configuration for '$effectiveConfigName' (Server: $($loadedConfig.SQLServer), DB: $($loadedConfig.SQLDB))"
+            
+            # Set the config to use the existing Connect-AeriesSQLDB function
+            $Script:Config = $Script:Config  # Keep existing config
+            
+            Write-Verbose "Using active SPSAeries configuration (Server: $($Script:Config.SQLServer), DB: $($Script:Config.SQLDB))"
 
             # Safety check for modifying queries
             $isModifyingQuery = $false
@@ -171,15 +120,11 @@ Function Invoke-SPSAeriesSqlQuery {
             }
 
             if ($isModifyingQuery -and (-not $Force)) {
-                if (-not ($PSCmdlet.ShouldProcess("SQL Server: $($loadedConfig.SQLServer), Database: $($loadedConfig.SQLDB)", "Execute Modifying SQL Query"))) {
+                if (-not ($PSCmdlet.ShouldProcess("SQL Server: $($Script:Config.SQLServer), Database: $($Script:Config.SQLDB)", "Execute Modifying SQL Query"))) {
                     Write-Warning "Execution cancelled by user."
                     return
                 }
             }
-
-            # Set the config and creds to use the existing Connect-AeriesSQLDB function
-            $Script:Config = $loadedConfig
-            $Script:SQLCreds = $loadedSqlCreds
             
             # Call the existing Connect-AeriesSQLDB function to set up the connection
             . $PSScriptRoot\..\Private\Connect-AeriesSQLDB.ps1
