@@ -84,7 +84,8 @@ FunctionsToExport = @(  'Connect-AeriesAPI',
                         'Update-SPSAeriesDistrictAssetItem',
                         'Update-SPSAeriesDistrictAssetTitle',
                         'Update-SPSAeriesDistrictAssetAssociation',
-                        'Update-SPSAeriesStudent')
+                        'Update-SPSAeriesStudent',
+                        'Invoke-SPSAeriesSqlQuery')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
