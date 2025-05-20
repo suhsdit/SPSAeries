@@ -2,7 +2,9 @@ name: SPSAeries
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 env:
   major: 0
