@@ -60,7 +60,7 @@ Function Invoke-SPSAeriesSqlQuery {
         [ValidateScript({ Test-Path $_ -PathType Leaf })]
         [string]$Path,
 
-[Parameter(Mandatory = $false,
+        [Parameter(Mandatory = $false,
             HelpMessage = 'Output format: PSObject, DataTable, NonQuery, Scalar.')]
         [ValidateSet('PSObject', 'DataTable', 'NonQuery', 'Scalar')]
         [string]$As = 'PSObject',
@@ -160,14 +160,20 @@ Function Invoke-SPSAeriesSqlQuery {
                         $results = @($dataSet.Tables[0] | ForEach-Object { [PSCustomObject]$_ })
                     }
                 } else {
-                    $results = $null
+                    # Create an appropriate empty result based on output type
+                    if ($As -eq 'DataTable') {
+                        $results = New-Object System.Data.DataTable
+                    } else { # PSObject
+                        $results = @()
+                    }
                 }
             }
             
-            # Only check for null results if not a NonQuery or Scalar operation
-            if ($As -notin @('NonQuery', 'Scalar') -and $null -eq $results) {
+            # Add a verbose message for empty results in PSObject or DataTable
+            if ($As -in @('PSObject', 'DataTable') -and 
+                (($As -eq 'PSObject' -and $results.Count -eq 0) -or 
+                 ($As -eq 'DataTable' -and $results.Rows.Count -eq 0))) {
                 Write-Verbose "Query returned no data."
-                return # Return nothing explicitly for empty PSObject/DataTable if results are null
             }
 
             # Output the results based on the requested format
