@@ -40,29 +40,7 @@ After that, you should be set, you can run New-PSAeriesConfiguration again to se
 
 **Examples:**
 
-*This will list student with ID Number 1234*
-
-Get-AeriesStudent -ID 1234
-
--------------------------------
-
-*This will list all students at school code 1*
-
-Get-AeriesStudent -SchoolCode 1
-
--------------------------------
-
-*This will list all students under all school codes*
-
-Get-AeriesStudent
-
--------------------------------
-
-*Accepts pipeline input for multiple Student ID's*
-
-1234, 1235, 5567 | Get-AeriesStudent
-
--------------------------------
+ToDo
 
 ### Basic SQL Query
 ```powershell
