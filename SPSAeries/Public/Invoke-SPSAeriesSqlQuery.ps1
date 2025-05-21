@@ -132,7 +132,7 @@ Function Invoke-SPSAeriesSqlQuery {
             
             # Check if connection was successful
             if (-not $Script:SQLConnection -or $Script:SQLConnection.State -ne 'Open') {
-                throw "Failed to establish SQL connection to $($loadedConfig.SQLServer)."
+                throw "Failed to establish SQL connection to $($Script:Config.SQLServer)."
             }
             
             # Create and execute the command
@@ -140,7 +140,7 @@ Function Invoke-SPSAeriesSqlQuery {
             $command.CommandTimeout = $QueryTimeout
             
             # Execute based on the output type
-            Write-Verbose "Executing SQL query against $($loadedConfig.SQLServer)/$($loadedConfig.SQLDB)..."
+            Write-Verbose "Executing SQL query against $($Script:Config.SQLServer)/$($Script:Config.SQLDB)..."
             
             if ($As -eq 'Scalar') {
                 $results = $command.ExecuteScalar()
