@@ -11,6 +11,12 @@ This module is designed to address specific needs and design gaps in the officia
 ## Latest Updates (v0.3.0)
 
 ### New Features
+- Added `Invoke-SPSAeriesSqlQueryToSftp` function for SQL query execution with SFTP upload
+  - Execute SQL queries and automatically upload results to SFTP servers
+  - Support for both password and key-based authentication
+  - Timestamp verification of uploaded files
+  - Returns structured result objects for pipeline processing
+
 - Added `Invoke-SPSAeriesSqlQuery` function for flexible SQL query execution
   - Execute queries directly or from .sql files
   - Multiple output formats: PSObject, DataTable, NonQuery, Scalar
@@ -57,6 +63,32 @@ Invoke-SPSAeriesSqlQuery -Query "SELECT COUNT(*) FROM STU" -As Scalar
 Invoke-SPSAeriesSqlQuery -Query "UPDATE STU SET TG = 'X' WHERE ID = 12345" -Force
 ```
 
+### SQL Query with SFTP Upload
+```powershell
+# Create credential object for SFTP authentication
+$sftpCred = Get-Credential -Message "Enter SFTP credentials"
+
+# Execute SQL query and upload results to SFTP server
+$result = Invoke-SPSAeriesSqlQueryToSftp -SqlFilePath "C:\queries\daily_report.sql" `
+                                       -SftpHost "sftp.example.com" `
+                                       -SftpCredential $sftpCred `
+                                       -RemotePath "/uploads" `
+                                       -CsvFileName "DailyReport.csv"
+
+# Check upload result
+if ($result.Success) {
+    Write-Host "File successfully uploaded to $($result.RemoteFile) at $($result.UploadTime)"
+}
+
+# Using key-based authentication
+Invoke-SPSAeriesSqlQueryToSftp -SqlFilePath "C:\queries\student_data.sql" `
+                              -SftpHost "sftp.example.com" `
+                              -SftpCredential $sftpCred `
+                              -SftpKeyFile "C:\keys\private_key.ppk" `
+                              -RemotePath "/reports" `
+                              -DeleteAfterUpload
+```
+
 ### Working with Results
 ```powershell
 # Get results as a DataTable
@@ -92,7 +124,8 @@ Update 7/22: Built out functions to interact with Aeries District Assets. In my 
 
 ## Changelog
 
-### v0.3.0 (2025-05-20)
+### v0.3.0 (2025-05-22)
+- Added `Invoke-SPSAeriesSqlQueryToSftp` function for SQL query execution with SFTP upload
 - Added `Invoke-SPSAeriesSqlQuery` function
 - Standardized configuration management
 - Improved error handling and logging
