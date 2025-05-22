@@ -12,7 +12,7 @@
 RootModule = 'SPSAeries.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.4.0'
+ModuleVersion = '<ModuleVersion>'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
