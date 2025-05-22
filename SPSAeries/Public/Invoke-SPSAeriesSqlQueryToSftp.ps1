@@ -168,7 +168,7 @@ Function Invoke-SPSAeriesSqlQueryToSftp {
                                     $loaded = $true
                                     break
                                 } catch {
-                                    Write-Verbose "Could not load SSH.NET from $path: $($_.Exception.Message)"
+                                    Write-Verbose "Could not load SSH.NET from $path : $($_.Exception.Message)"
                                 }
                             }
                         }
@@ -260,6 +260,35 @@ Function Invoke-SPSAeriesSqlQueryToSftp {
                         # Upload the file
                         $uploadResult = Set-SFTPItem -SFTPSession $sftpSession -Path $tempCsvPath -Destination $RemotePath -Force
                         
+                        # Get the remote file path (combine destination path with filename)
+                        $remoteFileName = [System.IO.Path]::GetFileName($tempCsvPath)
+                        $remoteFilePath = "$RemotePath/$remoteFileName"
+                        if (-not $remoteFilePath.StartsWith('/')) {
+                            $remoteFilePath = "/$remoteFilePath"
+                        }
+                        
+                        # Get local file timestamp for comparison
+                        $localFileInfo = Get-Item -Path $tempCsvPath
+                        $localFileTimestamp = $localFileInfo.LastWriteTime
+                        
+                        # Verify the upload was successful by checking if file exists on server
+                        $fileExists = Get-SFTPChildItem -SFTPSession $sftpSession -Path $RemotePath | 
+                                      Where-Object { $_.FullName -eq $remoteFilePath -or $_.Name -eq $remoteFileName }
+                        
+                        if ($fileExists) {
+                            # Check if timestamp is recent (within 5 minutes of local file)
+                            $remoteTimestamp = $fileExists.LastWriteTime
+                            $timeDifference = [Math]::Abs(($remoteTimestamp - $localFileTimestamp).TotalMinutes)
+                            
+                            if ($timeDifference -lt 5) {
+                                Write-Verbose "File successfully uploaded via Posh-SSH: $remoteFilePath (Timestamp verified)"
+                            } else {
+                                Write-Warning "File exists on server but timestamp differs significantly from local file. Remote: $remoteTimestamp, Local: $localFileTimestamp"
+                            }
+                        } else {
+                            Write-Warning "Upload verification failed - could not find file on SFTP server"
+                        }
+                        
                         # Clean up the session
                         Remove-SFTPSession -SFTPSession $sftpSession | Out-Null
                     }
@@ -318,7 +347,15 @@ Function Invoke-SPSAeriesSqlQueryToSftp {
                     }
                     
                     Write-Verbose "Successfully uploaded CSV file to SFTP server"
-                    Write-Output "Successfully uploaded query results to $remoteFilePath on $SftpHost"
+                    
+                    # Return a custom object with upload results instead of Write-Output
+                    [PSCustomObject]@{
+                        Success = $true
+                        Host = $SftpHost
+                        RemoteFile = $remoteFilePath
+                        LocalFile = $tempCsvPath
+                        UploadTime = [DateTime]::Now
+                    }
                     
                     # Step 4: Delete temporary CSV file if requested
                     if ($DeleteAfterUpload) {
