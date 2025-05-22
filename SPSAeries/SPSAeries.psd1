@@ -12,7 +12,7 @@
 RootModule = 'SPSAeries.psm1'
 
 # Version number of this module.
-ModuleVersion = '<ModuleVersion>'
+ModuleVersion = '0.4.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -76,6 +76,8 @@ FunctionsToExport = @(  'Connect-AeriesAPI',
                         'Get-SPSAeriesDistrictAssetItem',
                         'Get-SPSAeriesStaffEmail',
                         'Get-SPSAeriesStudentVerificationPassCode',
+                        'Invoke-SPSAeriesSqlQuery',
+                        'Invoke-SPSAeriesSqlQueryToSftp',
                         'New-SPSAeriesConfiguration',
                         'New-SPSAeriesDistrictAssetItem',
                         'New-SPSAeriesDistrictAssetAssociation',
@@ -84,8 +86,7 @@ FunctionsToExport = @(  'Connect-AeriesAPI',
                         'Update-SPSAeriesDistrictAssetItem',
                         'Update-SPSAeriesDistrictAssetTitle',
                         'Update-SPSAeriesDistrictAssetAssociation',
-                        'Update-SPSAeriesStudent',
-                        'Invoke-SPSAeriesSqlQuery')
+                        'Update-SPSAeriesStudent')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
