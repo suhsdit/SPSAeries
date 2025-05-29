@@ -98,7 +98,12 @@ Function Invoke-SPSAeriesSqlQueryToSftp {
 
         [Parameter(Mandatory = $false,
             HelpMessage = 'If specified, the local CSV file will be deleted after successful upload.')]
-        [switch]$DeleteAfterUpload
+        [switch]$DeleteAfterUpload,
+
+        [Parameter(Mandatory = $false,
+            HelpMessage = 'Specifies the delimiter for the output file. Valid values are "Comma" and "Tab". Defaults to "Comma".')]
+        [ValidateSet("Comma", "Tab")]
+        [string]$Delimiter = "Comma"
     )
 
     Begin {
@@ -221,9 +226,13 @@ Function Invoke-SPSAeriesSqlQueryToSftp {
                     return
                 }
                 
-                # Step 2: Export results to CSV
-                Write-Verbose "Exporting query results to CSV: $tempCsvPath"
-                $queryResults | Export-Csv -Path $tempCsvPath -NoTypeInformation -Encoding UTF8
+                # Step 2: Export results to CSV/TSV
+                Write-Verbose "Exporting query results to $Delimiter-delimited file: $tempCsvPath"
+                
+                # Set the delimiter based on parameter
+                $delimiterChar = if ($Delimiter -eq "Tab") { "`t" } else { "," }
+                
+                $queryResults | Export-Csv -Path $tempCsvPath -NoTypeInformation -Encoding UTF8 -Delimiter $delimiterChar
                 
                 if (-not (Test-Path $tempCsvPath)) {
                     throw "Failed to create CSV file at: $tempCsvPath"
