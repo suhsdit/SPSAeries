@@ -2,7 +2,14 @@ name: SPSAeries
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
+    paths:
+      - 'SPSAeries/**'
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'SPSAeries/**'
 
 env:
   major: 0
@@ -16,7 +23,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Run Build Script
       env:
@@ -31,7 +38,7 @@ jobs:
         Invoke-Pester -Script "./Tests/*.Tests.ps1" -OutputFile "test-results.xml" -OutputFormat NUnitXml
 
     - name: Publish test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: test-results
         path: test-results.xml

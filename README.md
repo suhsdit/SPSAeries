@@ -1,10 +1,33 @@
-**PSAeries**
+# SPSAeries
 
-*Powershell module for Aeries SIS*
+*PowerShell module for Aeries SIS*
 
-** 0.2.0 Updates **
+## About
 
-This module is shifting from what was once a standalone module to a module that supplements the official Aeries PS Module. Redundant commands have been removed. This module is meant to address design issues with the Aeries API and Aeries PS Module. This first update has stripped old commands and working on getting a workflow down for publishing to the PS Gallery. The below instructions still need to be updated.
+SPSAeries is a PowerShell module developed by Shasta Union High School District (SUHSD) to supplement the official Aeries PS Module. The 'SPS' prefix stands for 'Shasta PowerShell'. While developed by SUHSD, the module is designed for general use and is published on the PowerShell Gallery for public use.
+
+This module is designed to address specific needs and design gaps in the official Aeries API and PowerShell module, providing additional functionality and improved workflows for Aeries SIS administration. Redundant commands have been removed to focus on extending and enhancing the official module's capabilities.
+
+## Latest Updates (v0.3.0)
+
+### New Features
+- Added `Invoke-SPSAeriesSqlQueryToSftp` function for SQL query execution with SFTP upload
+  - Execute SQL queries and automatically upload results to SFTP servers
+  - Support for both password and key-based authentication
+  - Timestamp verification of uploaded files
+  - Returns structured result objects for pipeline processing
+
+- Added `Invoke-SPSAeriesSqlQuery` function for flexible SQL query execution
+  - Execute queries directly or from .sql files
+  - Multiple output formats: PSObject, DataTable, NonQuery, Scalar
+  - Built-in safety checks for modifying queries
+  - Uses existing SPSAeries configuration
+
+### Improvements
+- Standardized configuration management using `Set-SPSAeriesConfiguration`
+- Improved error handling and verbose logging
+- Removed dependency on SqlServer module
+- More consistent function naming and parameter sets
 
 **Disclaimer**
 
@@ -23,30 +46,92 @@ After that, you should be set, you can run New-PSAeriesConfiguration again to se
 
 **Examples:**
 
-*This will list student with ID Number 1234*
+ToDo
 
-Get-AeriesStudent -ID 1234
+### Basic SQL Query
+```powershell
+# Simple SELECT query
+Invoke-SPSAeriesSqlQuery -Query "SELECT TOP 10 * FROM STU"
 
--------------------------------
+# Execute a query from a file
+Invoke-SPSAeriesSqlQuery -Path "C:\queries\students.sql"
 
-*This will list all students at school code 1*
+# Get a single value
+Invoke-SPSAeriesSqlQuery -Query "SELECT COUNT(*) FROM STU" -As Scalar
 
-Get-AeriesStudent -SchoolCode 1
+# Execute an UPDATE (will prompt for confirmation)
+Invoke-SPSAeriesSqlQuery -Query "UPDATE STU SET TG = 'X' WHERE ID = 12345" -Force
+```
 
--------------------------------
+### SQL Query with SFTP Upload
+```powershell
+# Create credential object for SFTP authentication
+$sftpCred = Get-Credential -Message "Enter SFTP credentials"
 
-*This will list all students under all school codes*
+# Execute SQL query and upload results to SFTP server
+$result = Invoke-SPSAeriesSqlQueryToSftp -SqlFilePath "C:\queries\daily_report.sql" `
+                                       -SftpHost "sftp.example.com" `
+                                       -SftpCredential $sftpCred `
+                                       -RemotePath "/uploads" `
+                                       -CsvFileName "DailyReport.csv"
 
-Get-AeriesStudent
+# Check upload result
+if ($result.Success) {
+    Write-Host "File successfully uploaded to $($result.RemoteFile) at $($result.UploadTime)"
+}
 
--------------------------------
+# Using key-based authentication
+Invoke-SPSAeriesSqlQueryToSftp -SqlFilePath "C:\queries\student_data.sql" `
+                              -SftpHost "sftp.example.com" `
+                              -SftpCredential $sftpCred `
+                              -SftpKeyFile "C:\keys\private_key.ppk" `
+                              -RemotePath "/reports" `
+                              -DeleteAfterUpload
+```
 
-*Accepts pipeline input for multiple Student ID's*
+### Working with Results
+```powershell
+# Get results as a DataTable
+$students = Invoke-SPSAeriesSqlQuery -Query "SELECT * FROM STU" -As DataTable
+$students | Where-Object { $_.GR -eq '12' } | Format-Table
 
-1234, 1235, 5567 | Get-AeriesStudent
+# Process results with ForEach-Object
+Invoke-SPSAeriesSqlQuery -Query "SELECT ID, LN, FN FROM STU WHERE GR = '12'" | ForEach-Object {
+    [PSCustomObject]@{
+        StudentID = $_.ID
+        FullName = "$($_.LN), $($_.FN)"
+    }
+}
+```
 
--------------------------------
+### Using with Other Functions
+```powershell
+# Get configuration details
+Get-SPSAeriesConfiguration
+
+# Set active configuration
+Set-SPSAeriesConfiguration -ConfigName "Production"
+```
 
 **To Do**
 
 Update 7/22: Built out functions to interact with Aeries District Assets. In my limited testing, everything appears to work as expected. Need to build out help more on those commands.
+
+- Add more examples to documentation
+- Expand test coverage
+- Add support for parameterized queries
+- Add transaction support for batch operations
+
+## Changelog
+
+### v0.3.0 (2025-05-22)
+- Added `Invoke-SPSAeriesSqlQueryToSftp` function for SQL query execution with SFTP upload
+- Added `Invoke-SPSAeriesSqlQuery` function
+- Standardized configuration management
+- Improved error handling and logging
+- Removed SqlServer module dependency
+
+### v0.2.0
+- Initial release of SPSAeries (formerly PSAeries)
+- Focused on supplementing the official Aeries PS Module
+- Improved configuration management
