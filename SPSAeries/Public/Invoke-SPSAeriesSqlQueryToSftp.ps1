@@ -103,7 +103,11 @@ Function Invoke-SPSAeriesSqlQueryToSftp {
         [Parameter(Mandatory = $false,
             HelpMessage = 'Specifies the delimiter for the output file. Valid values are "Comma" and "Tab". Defaults to "Comma".')]
         [ValidateSet("Comma", "Tab")]
-        [string]$Delimiter = "Comma"
+        [string]$Delimiter = "Comma",
+
+        [Parameter(Mandatory = $false,
+            HelpMessage = 'If specified, verifies the upload was successful by checking if the file exists on the server with an updated timestamp.')]
+        [switch]$ConfirmSftpUpload
     )
 
     Begin {
@@ -276,26 +280,31 @@ Function Invoke-SPSAeriesSqlQueryToSftp {
                             $remoteFilePath = "/$remoteFilePath"
                         }
                         
-                        # Get local file timestamp for comparison
-                        $localFileInfo = Get-Item -Path $tempCsvPath
-                        $localFileTimestamp = $localFileInfo.LastWriteTime
-                        
-                        # Verify the upload was successful by checking if file exists on server
-                        $fileExists = Get-SFTPChildItem -SFTPSession $sftpSession -Path $RemotePath | 
-                                      Where-Object { $_.FullName -eq $remoteFilePath -or $_.Name -eq $remoteFileName }
-                        
-                        if ($fileExists) {
-                            # Check if timestamp is recent (within 5 minutes of local file)
-                            $remoteTimestamp = $fileExists.LastWriteTime
-                            $timeDifference = [Math]::Abs(($remoteTimestamp - $localFileTimestamp).TotalMinutes)
+                        # Only verify upload if ConfirmSftpUpload is specified
+                        if ($ConfirmSftpUpload) {
+                            # Get local file timestamp for comparison
+                            $localFileInfo = Get-Item -Path $tempCsvPath
+                            $localFileTimestamp = $localFileInfo.LastWriteTime
                             
-                            if ($timeDifference -lt 5) {
-                                Write-Verbose "File successfully uploaded via Posh-SSH: $remoteFilePath (Timestamp verified)"
+                            # Verify the upload was successful by checking if file exists on server
+                            $fileExists = Get-SFTPChildItem -SFTPSession $sftpSession -Path $RemotePath | 
+                                          Where-Object { $_.FullName -eq $remoteFilePath -or $_.Name -eq $remoteFileName }
+                            
+                            if ($fileExists) {
+                                # Check if timestamp is recent (within 5 minutes of local file)
+                                $remoteTimestamp = $fileExists.LastWriteTime
+                                $timeDifference = [Math]::Abs(($remoteTimestamp - $localFileTimestamp).TotalMinutes)
+                                
+                                if ($timeDifference -lt 5) {
+                                    Write-Verbose "File successfully uploaded via Posh-SSH: $remoteFilePath (Timestamp verified)"
+                                } else {
+                                    Write-Warning "File exists on server but timestamp differs significantly from local file. Remote: $remoteTimestamp, Local: $localFileTimestamp"
+                                }
                             } else {
-                                Write-Warning "File exists on server but timestamp differs significantly from local file. Remote: $remoteTimestamp, Local: $localFileTimestamp"
+                                Write-Warning "Upload verification failed - could not find file on SFTP server"
                             }
                         } else {
-                            Write-Warning "Upload verification failed - could not find file on SFTP server"
+                            Write-Verbose "File successfully uploaded via Posh-SSH: $remoteFilePath (Upload verification skipped)"
                         }
                         
                         # Clean up the session
