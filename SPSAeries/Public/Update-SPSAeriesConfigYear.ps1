@@ -1,72 +1,63 @@
-<#
-.SYNOPSIS
-    Updates SPSAeries database configuration files to rollover from one year to another.
-
-.DESCRIPTION
-    This script iterates through all directories in the SPSAeries config directory and updates
-    the SQLDB configuration in config.json files, changing the database year identifier
-    (e.g., DST24000 to DST25000).
-
-.PARAMETER UserName
-    The username for which to update the config files. Defaults to the current user.
-
-.PARAMETER OldYear
-    The old year identifier in the database name (e.g., 24 for DST24000). Defaults to last 2 digits of previous year.
-
-.PARAMETER NewYear
-    The new year identifier in the database name (e.g., 25 for DST25000). Defaults to last 2 digits of current year.
-
-.PARAMETER ConfigNames
-    Optional array of specific config directory names to process. If not provided, all directories will be processed.
-
-.PARAMETER WhatIf
-    Shows what changes would be made without actually making them.
-
-.EXAMPLE
-    .\Update-SPSAeriesConfigYear.ps1
-    Updates config files for the current user, changing from previous year to current year (e.g., DST24 to DST25 in 2025)
-
-.EXAMPLE
-    .\Update-SPSAeriesConfigYear.ps1 -UserName "jsmith" -OldYear 23 -NewYear 24
-    Updates config files for user "jsmith", changing DST23 to DST24
-
-.EXAMPLE
-    .\Update-SPSAeriesConfigYear.ps1 -WhatIf
-    Shows what changes would be made without actually making them
-
-.EXAMPLE
-    .\Update-SPSAeriesConfigYear.ps1 -ConfigNames @("School1", "School2")
-    Updates only the specified config directories
-
-.EXAMPLE
-    .\Update-SPSAeriesConfigYear.ps1 -ConfigNames "SingleSchool" -WhatIf
-    Preview changes for a single specific config directory
-#>
-
-[CmdletBinding(SupportsShouldProcess)]
-param(
-    [Parameter(Mandatory = $false)]
-    [string]$UserName = $env:USERNAME,
-    
-    [Parameter(Mandatory = $false)]
-    [ValidateRange(0, 99)]
-    [int]$OldYear = ((Get-Date).Year - 1) % 100,
-    
-    [Parameter(Mandatory = $false)]
-    [ValidateRange(0, 99)]
-    [int]$NewYear = (Get-Date).Year % 100,
-    
-    [Parameter(Mandatory = $false)]
-    [string[]]$ConfigNames = @()
-)
-
 function Update-SPSAeriesConfigYear {
+    <#
+    .SYNOPSIS
+        Updates SPSAeries database configuration files to rollover from one year to another.
+
+    .DESCRIPTION
+        This function iterates through all directories in the SPSAeries config directory and updates
+        the SQLDB configuration in config.json files, changing the database year identifier
+        (e.g., DST24000 to DST25000).
+
+    .PARAMETER UserName
+        The username for which to update the config files. Defaults to the current user.
+
+    .PARAMETER OldYear
+        The old year identifier in the database name (e.g., 24 for DST24000). Defaults to last 2 digits of previous year.
+
+    .PARAMETER NewYear
+        The new year identifier in the database name (e.g., 25 for DST25000). Defaults to last 2 digits of current year.
+
+    .PARAMETER ConfigNames
+        Optional array of specific config directory names to process. If not provided, all directories will be processed.
+
+    .EXAMPLE
+        Update-SPSAeriesConfigYear
+        Updates config files for the current user, changing from previous year to current year (e.g., DST24 to DST25 in 2025)
+
+    .EXAMPLE
+        Update-SPSAeriesConfigYear -UserName "jsmith" -OldYear 23 -NewYear 24
+        Updates config files for user "jsmith", changing DST23 to DST24
+
+    .EXAMPLE
+        Update-SPSAeriesConfigYear -WhatIf
+        Shows what changes would be made without actually making them
+
+    .EXAMPLE
+        Update-SPSAeriesConfigYear -ConfigNames @("School1", "School2")
+        Updates only the specified config directories
+
+    .EXAMPLE
+        Update-SPSAeriesConfigYear -ConfigNames "SingleSchool" -WhatIf
+        Preview changes for a single specific config directory
+
+    .NOTES
+        This function supports the -WhatIf and -Confirm parameters through SupportsShouldProcess.
+    #>
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [string]$UserName,
-        [int]$OldYear,
-        [int]$NewYear,
-        [string[]]$ConfigNames
+        [Parameter(Mandatory = $false)]
+        [string]$UserName = $env:USERNAME,
+        
+        [Parameter(Mandatory = $false)]
+        [ValidateRange(0, 99)]
+        [int]$OldYear = ((Get-Date).Year - 1) % 100,
+        
+        [Parameter(Mandatory = $false)]
+        [ValidateRange(0, 99)]
+        [int]$NewYear = (Get-Date).Year % 100,
+        
+        [Parameter(Mandatory = $false)]
+        [string[]]$ConfigNames = @()
     )
     
     # Construct the SPSAeries config directory path
@@ -192,6 +183,3 @@ function Update-SPSAeriesConfigYear {
         Write-Host "Database configuration rollover completed successfully!" -ForegroundColor Green
     }
 }
-
-# Execute the function with the provided parameters
-Update-SPSAeriesConfigYear -UserName $UserName -OldYear $OldYear -NewYear $NewYear -ConfigNames $ConfigNames
