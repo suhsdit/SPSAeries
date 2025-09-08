@@ -7,6 +7,7 @@ Function Get-SPSAeriesAttendanceData {
         It can return data for a specific school, student, date, or combination of these parameters.
         This function leverages Invoke-SPSAeriesSqlQuery for database access and returns ATT table 
         data with descriptive PowerShell-friendly property names.
+        
     .EXAMPLE
         Get-SPSAeriesAttendanceData -SchoolCode 13 -Date '2025-09-09'
         Returns attendance data for school 13 on September 9, 2025.
