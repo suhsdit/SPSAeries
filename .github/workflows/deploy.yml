@@ -15,7 +15,6 @@ env:
   major: 0
   minor: 3
   patch: ${{ github.run_number }}
-  buildVer: 0.3.${{ github.run_number }}
 
 jobs:
   test:
@@ -27,7 +26,7 @@ jobs:
 
     - name: Run Build Script
       env:
-        buildVer: ${{ env.buildVer }}
+        buildVer: 0.3.${{ github.run_number }}
       run: pwsh -File ./build.ps1
 
     - name: Run Pester tests
@@ -53,7 +52,7 @@ jobs:
   
       - name: Run build script
         env:
-          buildVer: ${{ env.buildVer }}
+          buildVer: 0.3.${{ github.run_number }}
         run: pwsh -File ./build.ps1
     
       - name: Install dependencies
