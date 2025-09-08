@@ -1,2 +1,5 @@
 config.PSD1
 apikey.xml
+
+# Build directory for local testing
+build/
