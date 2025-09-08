@@ -27,7 +27,7 @@ jobs:
     - name: Run Build Script
       env:
         buildVer: 0.3.${{ github.run_number }}
-      run: pwsh -File ./build.ps1
+      run: pwsh -File ./build.ps1 -BuildVersion "0.3.${{ github.run_number }}"
 
     - name: Run Pester tests
       shell: pwsh
@@ -53,7 +53,7 @@ jobs:
       - name: Run build script
         env:
           buildVer: 0.3.${{ github.run_number }}
-        run: pwsh -File ./build.ps1
+        run: pwsh -File ./build.ps1 -BuildVersion "0.3.${{ github.run_number }}"
     
       - name: Install dependencies
         shell: pwsh
