@@ -23,7 +23,7 @@ function Update-FunctionsToExport {
             $functionsArray = $functionNames -join ",`n                        "
             
             # Replace the FunctionsToExport array
-            $pattern = "FunctionsToExport\s*=\s*@\([^)]+\)"
+            $pattern = "FunctionsToExport\s*=\s*@\([^)]*\)"
             $replacement = "FunctionsToExport = @($functionsArray)"
             $updatedContent = $ManifestContent -replace $pattern, $replacement
             
