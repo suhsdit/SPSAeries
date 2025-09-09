@@ -78,7 +78,7 @@ Function Add-SPSAeriesAttendanceData {
     .PARAMETER ADAComment
         ADA comment (ACO). Optional.
     .PARAMETER FederalCode
-        Federal code (FA). Defaults to 0.
+        Federal code (FA). Optional.
     .INPUTS
         System.Int16
         System.Int64
@@ -259,8 +259,7 @@ Function Add-SPSAeriesAttendanceData {
 
         [Parameter(Mandatory = $false,
             ValueFromPipelineByPropertyName = $true)]
-        [ValidateRange(0, 9999)]
-        [int16]$FederalCode = 0
+        [string]$FederalCode = ''
     )
 
     Begin {
@@ -336,7 +335,7 @@ INSERT INTO ATT (
     '$ADACode', 
     $adaDateValue, 
     $adaCommentValue, 
-    $FederalCode, 
+    '$FederalCode', 
     0, 
     GETDATE()
 )
