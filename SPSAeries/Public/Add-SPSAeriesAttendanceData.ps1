@@ -60,9 +60,9 @@ Function Add-SPSAeriesAttendanceData {
     .PARAMETER NoSchool
         No school indicator (NS). Defaults to 0.
     .PARAMETER AttProgram1
-        Attendance program 1 (AP1). Defaults to 0.
+        Attendance program 1 (AP1). Optional.
     .PARAMETER AttProgram2
-        Attendance program 2 (AP2). Defaults to 0.
+        Attendance program 2 (AP2). Optional.
     .PARAMETER ReportingSchool
         Reporting school code (HS). Defaults to 0.
     .PARAMETER Interdistrict
@@ -72,11 +72,11 @@ Function Add-SPSAeriesAttendanceData {
     .PARAMETER DistrictOfResidence
         District of residence code (ITD). Defaults to 0.
     .PARAMETER ADACode
-        ADA code (ADA). Defaults to 0.
+        ADA code (ADA). Optional.
     .PARAMETER ADADate
-        ADA date (ADT). Defaults to NULL.
+        ADA date (ADT). Optional.
     .PARAMETER ADAComment
-        ADA comment (ACO). Defaults to NULL.
+        ADA comment (ACO). Optional.
     .PARAMETER FederalCode
         Federal code (FA). Defaults to 0.
     .INPUTS
@@ -255,7 +255,7 @@ Function Add-SPSAeriesAttendanceData {
 
         [Parameter(Mandatory = $false,
             ValueFromPipelineByPropertyName = $true)]
-        [string]$ADAComment,
+        [string]$ADAComment = '',
 
         [Parameter(Mandatory = $false,
             ValueFromPipelineByPropertyName = $true)]
@@ -296,7 +296,7 @@ WHERE SC = $SchoolCode AND SN = $StudentNumber AND DY = $SchoolDay
                 # Build the INSERT query
                 $dateString = $Date.ToString('yyyy-MM-dd HH:mm:ss.fff')
                 $adaDateValue = if ($PSBoundParameters.ContainsKey('ADADate')) { "'$($ADADate.ToString('yyyy-MM-dd HH:mm:ss.fff'))'" } else { 'NULL' }
-                $adaCommentValue = if ($PSBoundParameters.ContainsKey('ADAComment')) { "'$($ADAComment.Replace("'", "''"))'" } else { 'NULL' }
+                $adaCommentValue = "'$($ADAComment.Replace("'", "''"))'"
                 
                 $insertQuery = @"
 INSERT INTO ATT (
