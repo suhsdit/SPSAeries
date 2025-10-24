@@ -21,6 +21,10 @@ Function Invoke-SPSAeriesSqlQuery {
         - Scalar: For queries expected to return a single value.
     .PARAMETER QueryTimeout
         Specifies the query timeout in seconds. Defaults to 30.
+    .PARAMETER MaxRetries
+        Number of retry attempts for transient failures (e.g., deadlocks). Defaults to 5.
+    .PARAMETER RetryDelaySeconds
+        Delay in seconds between retry attempts. Defaults to 5.
     .PARAMETER Force
         Suppresses the confirmation prompt for queries that appear to modify data or schema.
     .EXAMPLE
@@ -70,6 +74,14 @@ Function Invoke-SPSAeriesSqlQuery {
         [int]$QueryTimeout = 30,
 
         [Parameter(Mandatory = $false,
+            HelpMessage = 'Number of retry attempts for transient failures.')]
+        [int]$MaxRetries = 5,
+
+        [Parameter(Mandatory = $false,
+            HelpMessage = 'Delay in seconds between retry attempts.')]
+        [int]$RetryDelaySeconds = 5,
+
+        [Parameter(Mandatory = $false,
             HelpMessage = 'Suppresses confirmation for modifying queries.')]
         [switch]$Force
     )
@@ -98,129 +110,175 @@ Function Invoke-SPSAeriesSqlQuery {
     }
 
     Process {
-        try {
-            # Use the global configuration set by Set-SPSAeriesConfig
-            if (-not $Script:Config -or -not $Script:SQLCreds) {
-                throw "No active SPSAeries configuration found. Please run Set-SPSAeriesConfiguration first."
-            }
-            
-            # Set the config to use the existing Connect-AeriesSQLDB function
-            $Script:Config = $Script:Config  # Keep existing config
-            
-            Write-Verbose "Using active SPSAeries configuration (Server: $($Script:Config.SQLServer), DB: $($Script:Config.SQLDB))"
+        # Use the global configuration set by Set-SPSAeriesConfig
+        if (-not $Script:Config -or -not $Script:SQLCreds) {
+            throw "No active SPSAeries configuration found. Please run Set-SPSAeriesConfiguration first."
+        }
+        
+        # Set the config to use the existing Connect-AeriesSQLDB function
+        $Script:Config = $Script:Config  # Keep existing config
+        
+        Write-Verbose "Using active SPSAeries configuration (Server: $($Script:Config.SQLServer), DB: $($Script:Config.SQLDB))"
 
-            # Safety check for modifying queries
-            $isModifyingQuery = $false
-            $queryFirstWord = ($resolvedQuery -split '\s+', 2 | Select-Object -First 1).ToLower()
-            $modifyingVerbs = @('insert', 'update', 'delete', 'create', 'alter', 'drop', 'truncate', 'execute', 'exec', 'merge', 'grant', 'revoke', 'deny')
-            
-            if ($modifyingVerbs -contains $queryFirstWord) {
-                $isModifyingQuery = $true
-                Write-Verbose "Query appears to be a data/schema modification query (starts with: $queryFirstWord)."
-            }
+        # Safety check for modifying queries
+        $isModifyingQuery = $false
+        $queryFirstWord = ($resolvedQuery -split '\s+', 2 | Select-Object -First 1).ToLower()
+        $modifyingVerbs = @('insert', 'update', 'delete', 'create', 'alter', 'drop', 'truncate', 'execute', 'exec', 'merge', 'grant', 'revoke', 'deny')
+        
+        if ($modifyingVerbs -contains $queryFirstWord) {
+            $isModifyingQuery = $true
+            Write-Verbose "Query appears to be a data/schema modification query (starts with: $queryFirstWord)."
+        }
 
-            if ($isModifyingQuery -and (-not $Force)) {
-                if (-not ($PSCmdlet.ShouldProcess("SQL Server: $($Script:Config.SQLServer), Database: $($Script:Config.SQLDB)", "Execute Modifying SQL Query"))) {
-                    Write-Warning "Execution cancelled by user."
-                    return
+        if ($isModifyingQuery -and (-not $Force)) {
+            if (-not ($PSCmdlet.ShouldProcess("SQL Server: $($Script:Config.SQLServer), Database: $($Script:Config.SQLDB)", "Execute Modifying SQL Query"))) {
+                Write-Warning "Execution cancelled by user."
+                return
+            }
+        }
+
+        # Retry loop for handling transient failures
+        $attempt = 0
+        $maxAttempts = $MaxRetries + 1  # Initial attempt + retries
+        $success = $false
+        $lastException = $null
+        
+        while (-not $success -and $attempt -lt $maxAttempts) {
+            $attempt++
+            
+            try {
+                if ($attempt -gt 1) {
+                    Write-Warning "Retry attempt $($attempt - 1) of $MaxRetries after waiting $RetryDelaySeconds seconds..."
+                    Start-Sleep -Seconds $RetryDelaySeconds
                 }
-            }
-            
-            # Call the existing Connect-AeriesSQLDB function to set up the connection
-            . $PSScriptRoot\..\Private\Connect-AeriesSQLDB.ps1
-            Connect-AeriesSQLDB
-            
-            # Check if connection was successful
-            if (-not $Script:SQLConnection -or $Script:SQLConnection.State -ne 'Open') {
-                throw "Failed to establish SQL connection to $($Script:Config.SQLServer)."
-            }
-            
-            # Create and execute the command
-            $command = New-Object System.Data.SqlClient.SqlCommand($resolvedQuery, $Script:SQLConnection)
-            $command.CommandTimeout = $QueryTimeout
-            
-            # Execute based on the output type
-            Write-Verbose "Executing SQL query against $($Script:Config.SQLServer)/$($Script:Config.SQLDB)..."
-            
-            if ($As -eq 'Scalar') {
-                $results = $command.ExecuteScalar()
-            } elseif ($As -eq 'NonQuery') {
-                $results = $command.ExecuteNonQuery()
-            } else {
-                # For PSObject or DataTable, we'll use a DataAdapter
-                $adapter = New-Object System.Data.SqlClient.SqlDataAdapter($command)
-                $dataSet = New-Object System.Data.DataSet
-                $adapter.Fill($dataSet) | Out-Null
                 
-                if ($dataSet.Tables.Count -gt 0) {
-                    if ($As -eq 'DataTable') {
-                        $results = $dataSet.Tables[0]
-                    } else {
-                        # Convert DataTable to array of PSObjects
-                        $results = @($dataSet.Tables[0] | ForEach-Object { [PSCustomObject]$_ })
-                    }
+                # Call the existing Connect-AeriesSQLDB function to set up the connection
+                Connect-AeriesSQLDB
+                
+                # Check if connection was successful
+                if (-not $Script:SQLConnection -or $Script:SQLConnection.State -ne 'Open') {
+                    throw "Failed to establish SQL connection to $($Script:Config.SQLServer)."
+                }
+                
+                # Create and execute the command
+                $command = New-Object System.Data.SqlClient.SqlCommand($resolvedQuery, $Script:SQLConnection)
+                $command.CommandTimeout = $QueryTimeout
+                
+                # Execute based on the output type
+                if ($attempt -eq 1) {
+                    Write-Verbose "Executing SQL query against $($Script:Config.SQLServer)/$($Script:Config.SQLDB)..."
+                }
+                
+                if ($As -eq 'Scalar') {
+                    $results = $command.ExecuteScalar()
+                } elseif ($As -eq 'NonQuery') {
+                    $results = $command.ExecuteNonQuery()
                 } else {
-                    # Create an appropriate empty result based on output type
-                    if ($As -eq 'DataTable') {
-                        $results = New-Object System.Data.DataTable
-                    } else { # PSObject
-                        $results = @()
+                    # For PSObject or DataTable, we'll use a DataAdapter
+                    $adapter = New-Object System.Data.SqlClient.SqlDataAdapter($command)
+                    $dataSet = New-Object System.Data.DataSet
+                    $adapter.Fill($dataSet) | Out-Null
+                    
+                    if ($dataSet.Tables.Count -gt 0) {
+                        if ($As -eq 'DataTable') {
+                            $results = $dataSet.Tables[0]
+                        } else {
+                            # Convert DataTable to array of PSObjects
+                            $results = @($dataSet.Tables[0] | ForEach-Object { [PSCustomObject]$_ })
+                        }
+                    } else {
+                        # Create an appropriate empty result based on output type
+                        if ($As -eq 'DataTable') {
+                            $results = New-Object System.Data.DataTable
+                        } else { # PSObject
+                            $results = @()
+                        }
+                    }
+                }
+                
+                # If we reach here, the query succeeded
+                $success = $true
+                
+                # Add a verbose message for empty results in PSObject or DataTable
+                if ($As -in @('PSObject', 'DataTable') -and 
+                    (($As -eq 'PSObject' -and $results.Count -eq 0) -or 
+                     ($As -eq 'DataTable' -and $results.Rows.Count -eq 0))) {
+                    Write-Verbose "Query returned no data."
+                }
+
+                # Output the results based on the requested format
+                switch ($As) {
+                    'PSObject' {
+                        # Results are already converted to PSObjects in the main execution block
+                        Write-Output $results
+                    }
+                    'DataTable' {
+                        # Results are already a DataTable when As is 'DataTable'
+                        Write-Output $results
+                    }
+                    'NonQuery' {
+                        # For NonQuery, output the number of rows affected
+                        Write-Verbose "NonQuery operation completed. Rows affected: $results"
+                        Write-Output $results
+                    }
+                    'Scalar' {
+                        # For Scalar, output the single value
+                        Write-Output $results
                     }
                 }
             }
-            
-            # Add a verbose message for empty results in PSObject or DataTable
-            if ($As -in @('PSObject', 'DataTable') -and 
-                (($As -eq 'PSObject' -and $results.Count -eq 0) -or 
-                 ($As -eq 'DataTable' -and $results.Rows.Count -eq 0))) {
-                Write-Verbose "Query returned no data."
-            }
-
-            # Output the results based on the requested format
-            switch ($As) {
-                'PSObject' {
-                    # Results are already converted to PSObjects in the main execution block
-                    Write-Output $results
+            catch {
+                $lastException = $_
+                $isRetriable = $false
+                
+                # Check if this is a retriable error (deadlock, timeout, connection issues)
+                if ($_.Exception -is [System.Data.SqlClient.SqlException]) {
+                    $sqlException = $_.Exception
+                    # SQL Error codes for retriable errors:
+                    # 1205 = Deadlock
+                    # -2 = Timeout
+                    # 40197, 40501, 40613, 49918, 49919, 49920 = Azure SQL transient errors
+                    # 64 = Connection error
+                    # 233 = Connection initialization error
+                    $retriableErrorCodes = @(1205, -2, 40197, 40501, 40613, 49918, 49919, 49920, 64, 233)
+                    
+                    if ($retriableErrorCodes -contains $sqlException.Number) {
+                        $isRetriable = $true
+                        Write-Warning "Transient SQL error detected (Error $($sqlException.Number)): $($sqlException.Message)"
+                    }
                 }
-                'DataTable' {
-                    # Results are already a DataTable when As is 'DataTable'
-                    Write-Output $results
-                }
-                'NonQuery' {
-                    # For NonQuery, output the number of rows affected
-                    Write-Verbose "NonQuery operation completed. Rows affected: $results"
-                    Write-Output $results
-                }
-                'Scalar' {
-                    # For Scalar, output the single value
-                    Write-Output $results
+                
+                # If not retriable or we've exhausted retries, throw the error
+                if (-not $isRetriable -or $attempt -ge $maxAttempts) {
+                    $errorMessage = "An error occurred while executing the SQL query: $($_.Exception.Message)"
+                    if ($_.Exception.InnerException) {
+                        $errorMessage += "`nInner Exception: $($_.Exception.InnerException.Message)"
+                    }
+                    
+                    # For SQL-specific errors
+                    if ($_.Exception -is [System.Data.SqlClient.SqlException]) {
+                        $sqlException = $_.Exception
+                        $errorMessage += "`nSQL Error $($sqlException.Number): $($sqlException.Message)"
+                        $errorMessage += "`nLine Number: $($sqlException.LineNumber)"
+                        $errorMessage += "`nSource: $($sqlException.Source)"
+                        $errorMessage += "`nServer: $($sqlException.Server)"
+                        $errorMessage += "`nProcedure: $($sqlException.Procedure)"
+                    }
+                    
+                    if ($attempt -ge $maxAttempts -and $isRetriable) {
+                        $errorMessage += "`n`nQuery failed after $MaxRetries retry attempts."
+                    }
+                    
+                    Write-Error $errorMessage -ErrorAction Stop
                 }
             }
-        }
-        catch {
-            $errorMessage = "An error occurred while executing the SQL query: $($_.Exception.Message)"
-            if ($_.Exception.InnerException) {
-                $errorMessage += "`nInner Exception: $($_.Exception.InnerException.Message)"
-            }
-            
-            # For SQL-specific errors
-            if ($_.Exception -is [System.Data.SqlClient.SqlException]) {
-                $sqlException = $_.Exception
-                $errorMessage += "`nSQL Error $($sqlException.Number): $($sqlException.Message)"
-                $errorMessage += "`nLine Number: $($sqlException.LineNumber)"
-                $errorMessage += "`nSource: $($sqlException.Source)"
-                $errorMessage += "`nServer: $($sqlException.Server)"
-                $errorMessage += "`nProcedure: $($sqlException.Procedure)"
-            }
-            
-            Write-Error $errorMessage -ErrorAction Stop
-        }
-        finally {
-            # Ensure the SQL connection is properly closed
-            if ($null -ne $Script:SQLConnection -and $Script:SQLConnection.State -eq 'Open') {
-                $Script:SQLConnection.Close()
-                $Script:SQLConnection.Dispose()
-                $Script:SQLConnection = $null
+            finally {
+                # Ensure the SQL connection is properly closed after each attempt
+                if ($null -ne $Script:SQLConnection -and $Script:SQLConnection.State -eq 'Open') {
+                    $Script:SQLConnection.Close()
+                    $Script:SQLConnection.Dispose()
+                    $Script:SQLConnection = $null
+                }
             }
         }
     }
