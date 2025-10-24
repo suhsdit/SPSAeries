@@ -37,27 +37,21 @@ Function Update-SPSAeriesStudent{
     Begin{
         Write-Verbose -Message "Starting $($MyInvocation.InvocationName) with $($PsCmdlet.ParameterSetName) parameterset..."
         Write-Verbose -Message "Parameters are $($PSBoundParameters | Select-Object -Property *)"
-        Connect-AeriesSQLDB
     }
     Process{
         if ($Email) {
-            $SQLCommand.CommandText = "UPDATE STU SET SEM = @Email Where ID = @ID"
-            $null = $SQLCommand.Parameters.AddWithValue("@Email", $Email)
-            $null = $SQLCommand.Parameters.AddWithValue("@ID", $ID)
-            $null = $SQLCommand.ExecuteNonQuery()
-            $SQLCommand.Parameters.Clear()
+            $query = "UPDATE STU SET SEM = '$($Email.Replace("'", "''"))' WHERE ID = $ID"
+            Write-Verbose -Message "Updating email for student ID $ID"
+            $null = Invoke-SPSAeriesSqlQuery -Query $query -As NonQuery -Force
         }
 
         if ($NetworkLoginID) {
-            $SQLCommand.CommandText = "UPDATE STU SET NID = @NetworkLoginID Where ID = @ID"
-            $null = $SQLCommand.Parameters.AddWithValue("@NetworkLoginID", $NetworkLoginID)
-            $null = $SQLCommand.Parameters.AddWithValue("@ID", $ID)
-            $null = $SQLCommand.ExecuteNonQuery()|Out-Null
-            $SQLCommand.Parameters.Clear()
+            $query = "UPDATE STU SET NID = '$($NetworkLoginID.Replace("'", "''"))' WHERE ID = $ID"
+            Write-Verbose -Message "Updating Network Login ID for student ID $ID"
+            $null = Invoke-SPSAeriesSqlQuery -Query $query -As NonQuery -Force
         }
     }
     End{
-        $Script:SQLConnection.Close()
         Write-Verbose -Message "Ending $($MyInvocation.InvocationName)..."
     }
 }

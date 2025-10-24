@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"Posh-AeriesApi": {
+			"url": "https://gitmcp.io/AeriesSoftware/Posh-AeriesApi",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}
