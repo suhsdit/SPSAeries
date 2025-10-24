@@ -148,7 +148,7 @@ Function Invoke-SPSAeriesSqlQuery {
             
             try {
                 if ($attempt -gt 1) {
-                    Write-Warning "Retry attempt $($attempt - 1) of $MaxRetries after waiting $RetryDelaySeconds seconds..."
+                    Write-Verbose "Retry attempt $($attempt - 1) of $MaxRetries after waiting $RetryDelaySeconds seconds..."
                     Start-Sleep -Seconds $RetryDelaySeconds
                 }
                 
@@ -244,7 +244,7 @@ Function Invoke-SPSAeriesSqlQuery {
                     
                     if ($retriableErrorCodes -contains $sqlException.Number) {
                         $isRetriable = $true
-                        Write-Warning "Transient SQL error detected (Error $($sqlException.Number)): $($sqlException.Message)"
+                        Write-Verbose "Transient SQL error detected (Error $($sqlException.Number)): $($sqlException.Message)"
                     }
                 }
                 
