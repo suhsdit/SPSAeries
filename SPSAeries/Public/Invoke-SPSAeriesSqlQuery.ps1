@@ -229,22 +229,17 @@ Function Invoke-SPSAeriesSqlQuery {
             }
             catch {
                 $lastException = $_
-                $isRetriable = $false
                 
-                # Check if this is a retriable error (deadlock, timeout, connection issues)
-                if ($_.Exception -is [System.Data.SqlClient.SqlException]) {
-                    $sqlException = $_.Exception
-                    # SQL Error codes for retriable errors:
-                    # 1205 = Deadlock
-                    # -2 = Timeout
-                    # 40197, 40501, 40613, 49918, 49919, 49920 = Azure SQL transient errors
-                    # 64 = Connection error
-                    # 233 = Connection initialization error
-                    $retriableErrorCodes = @(1205, -2, 40197, 40501, 40613, 49918, 49919, 49920, 64, 233)
-                    
-                    if ($retriableErrorCodes -contains $sqlException.Number) {
-                        $isRetriable = $true
-                        Write-Verbose "Transient SQL error detected (Error $($sqlException.Number)): $($sqlException.Message)"
+                # All errors are potentially retriable
+                $isRetriable = $true
+                
+                # Log retry information at verbose level (not as warning during retries)
+                if ($attempt -lt $maxAttempts) {
+                    if ($_.Exception -is [System.Data.SqlClient.SqlException]) {
+                        $sqlException = $_.Exception
+                        Write-Verbose "Transient error detected (SQL Error $($sqlException.Number)): $($sqlException.Message). Retrying... (Attempt $attempt of $maxAttempts)"
+                    } else {
+                        Write-Verbose "Error detected: $($_.Exception.Message). Retrying... (Attempt $attempt of $maxAttempts)"
                     }
                 }
                 
