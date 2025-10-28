@@ -48,8 +48,39 @@ Function Set-SPSAeriesConfiguration{
                 Write-Verbose "Config: $Config"
                 Write-Verbose "URL: $($Config.APIURL)"
 
-                # Initializes the official AeriesApi module
-                Initialize-AeriesApi -URL $Config.APIURL -Certificate $APIKey.GetNetworkCredential().Password
+                # Initializes the official AeriesApi module with retry logic
+                $maxRetries = 5
+                $retryDelaySeconds = 5
+                $attempt = 0
+                $maxAttempts = $maxRetries + 1
+                $initSuccess = $false
+                $lastInitException = $null
+                
+                while (-not $initSuccess -and $attempt -lt $maxAttempts) {
+                    $attempt++
+                    
+                    try {
+                        if ($attempt -gt 1) {
+                            Write-Verbose "Retry attempt $($attempt - 1) of $maxRetries after waiting $retryDelaySeconds seconds..."
+                            Start-Sleep -Seconds $retryDelaySeconds
+                        }
+                        
+                        Write-Verbose "Initializing AeriesApi (Attempt $attempt of $maxAttempts)..."
+                        Initialize-AeriesApi -URL $Config.APIURL -Certificate $APIKey.GetNetworkCredential().Password
+                        $initSuccess = $true
+                        Write-Verbose "AeriesApi initialized successfully."
+                    }
+                    catch {
+                        $lastInitException = $_
+                        
+                        if ($attempt -lt $maxAttempts) {
+                            Write-Verbose "Error initializing AeriesApi: $($_.Exception.Message). Retrying... (Attempt $attempt of $maxAttempts)"
+                        } else {
+                            # Final attempt failed, throw the error
+                            throw "Failed to initialize AeriesApi after $maxRetries retry attempts: $($_.Exception.Message)"
+                        }
+                    }
+                }
 
                 # Create URL Path after initialization so we have the root API url in case we need to make any unique API calls of our own
                 $uri = New-Object System.Uri($Config.APIURL)
